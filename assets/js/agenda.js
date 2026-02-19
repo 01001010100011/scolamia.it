@@ -23,11 +23,24 @@ function agendaSortValue(value) {
   return Number.isNaN(time) ? Number.POSITIVE_INFINITY : time;
 }
 
+function agendaDateTokens(value) {
+  const normalized = normalizeAgendaDateInput(value);
+  if (!normalized) return String(value || "");
+  const date = new Date(`${normalized}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return normalized;
+  return [
+    normalized,
+    date.toLocaleDateString("it-IT"),
+    date.toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit", year: "numeric" }),
+    date.toLocaleDateString("it-IT", { day: "2-digit", month: "long", year: "numeric" })
+  ].join(" ");
+}
+
 function render(query = "") {
   const q = query.trim().toLowerCase();
   const filtered = !q
     ? events
-    : events.filter((event) => `${event.date} ${event.title} ${event.category} ${event.description}`.toLowerCase().includes(q));
+    : events.filter((event) => `${agendaDateTokens(event.date)} ${event.title} ${event.category} ${event.description}`.toLowerCase().includes(q));
 
   listEl.innerHTML = filtered.length
     ? filtered.map((event) => `

@@ -49,38 +49,49 @@ function normalizeDateValue(value) {
 }
 
 async function renderHome() {
-  try {
-    const [published, agendaEvents] = await Promise.all([getPublishedArticles(), getAgendaEvents()]);
-    const top = published.slice(0, 3);
+  const [articlesRes, agendaRes, featuredRes] = await Promise.allSettled([
+    getPublishedArticles(),
+    getAgendaEvents(),
+    getFeaturedArticleIds()
+  ]);
 
-    if (!top.length) {
-      grid.innerHTML = '<div class="md:col-span-3 border-2 border-black bg-white p-5 shadow-brutal">Nessun articolo pubblicato.</div>';
-      featured.innerHTML = '<div class="border-2 border-white/60 p-4">Nessun contenuto in evidenza.</div>';
-      return;
-    }
+  const published = articlesRes.status === "fulfilled" ? articlesRes.value : [];
+  const top = published.slice(0, 3);
 
+  if (articlesRes.status === "rejected") {
+    console.error(articlesRes.reason);
+    grid.innerHTML = '<div class="md:col-span-3 border-2 border-black bg-white p-5 shadow-brutal">Errore caricamento articoli.</div>';
+  } else if (!top.length) {
+    grid.innerHTML = '<div class="md:col-span-3 border-2 border-black bg-white p-5 shadow-brutal">Nessun articolo pubblicato.</div>';
+  } else {
     grid.innerHTML = top.map(articleCard).join("");
+  }
 
-    const featuredIds = await getFeaturedArticleIds();
+  if (articlesRes.status === "rejected") {
+    featured.innerHTML = '<div class="border-2 border-white/60 p-4">Errore caricamento evidenza.</div>';
+  } else {
+    const featuredIds = featuredRes.status === "fulfilled" ? featuredRes.value : [];
     const featuredArticles = (featuredIds.length
       ? featuredIds.map((id) => published.find((item) => item.id === id)).filter(Boolean)
       : top
     ).slice(0, 3);
 
-    featured.innerHTML = featuredArticles.map(featuredCard).join("");
+    featured.innerHTML = featuredArticles.length
+      ? featuredArticles.map(featuredCard).join("")
+      : '<div class="border-2 border-white/60 p-4">Nessun contenuto in evidenza.</div>';
+  }
 
-    const upcoming = [...agendaEvents]
+  if (agendaRes.status === "rejected") {
+    console.error(agendaRes.reason);
+    homeAgendaGrid.innerHTML = '<div class="md:col-span-3 border-2 border-white p-4">Errore caricamento agenda.</div>';
+  } else {
+    const upcoming = [...agendaRes.value]
       .sort((a, b) => normalizeDateValue(a.date) - normalizeDateValue(b.date))
       .slice(0, 3);
 
     homeAgendaGrid.innerHTML = upcoming.length
       ? upcoming.map(agendaCard).join("")
       : '<div class="md:col-span-3 border-2 border-white p-4">Nessun evento agenda disponibile.</div>';
-  } catch (error) {
-    console.error(error);
-    grid.innerHTML = '<div class="md:col-span-3 border-2 border-black bg-white p-5 shadow-brutal">Errore caricamento articoli.</div>';
-    featured.innerHTML = '<div class="border-2 border-white/60 p-4">Errore caricamento evidenza.</div>';
-    homeAgendaGrid.innerHTML = '<div class="md:col-span-3 border-2 border-white p-4">Errore caricamento agenda.</div>';
   }
 }
 
