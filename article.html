@@ -25,7 +25,7 @@
     .headline { font-family: "Bebas Neue", sans-serif; letter-spacing: .04em; }
   </style>
 </head>
-<body class="text-ink">
+<body class="text-ink" data-page-title="Articolo">
   <header class="sticky top-0 z-50 bg-paper border-b-4 border-black">
     <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between gap-4">
       <a href="index.html" class="flex items-center gap-3">
@@ -34,7 +34,7 @@
         </div>
         <div>
           <p class="headline text-3xl leading-none">ScolaMia.it</p>
-          <p class="text-xs font-semibold uppercase tracking-wider">Articolo</p>
+          <p data-page-label class="text-xs font-semibold uppercase tracking-wider">Articolo</p>
         </div>
       </a>
       <nav class="hidden md:flex items-center gap-6 text-sm font-bold uppercase">
@@ -69,6 +69,7 @@
     <article id="articleContainer" class="mt-4 border-4 border-black bg-white p-6 md:p-10 shadow-brutal"></article>
   </main>
 
+  <script type="module" src="assets/js/page-label.js"></script>
   <script type="module" src="assets/js/mobile-nav.js"></script>
   <script type="module" src="assets/js/article.js"></script>
 </body>

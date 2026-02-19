@@ -50,7 +50,7 @@
     @keyframes rise { to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
-<body class="text-ink">
+<body class="text-ink" data-page-title="Home">
   <div class="min-h-screen flex flex-col">
     <header class="sticky top-0 z-50 bg-paper border-b-4 border-black">
       <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between gap-4">
@@ -60,7 +60,7 @@
           </div>
           <div>
             <p class="headline text-3xl leading-none">ScolaMia.it</p>
-            <p class="text-xs font-semibold uppercase tracking-wider">Istituto Comprensivo</p>
+            <p data-page-label class="text-xs font-semibold uppercase tracking-wider">Home</p>
           </div>
         </a>
         <nav class="hidden md:flex items-center gap-6 text-sm font-bold uppercase">
@@ -149,6 +149,7 @@
     </footer>
   </div>
 
+  <script type="module" src="assets/js/page-label.js"></script>
   <script type="module" src="assets/js/mobile-nav.js"></script>
   <script type="module" src="assets/js/index.js"></script>
 </body>
