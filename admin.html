@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - ScolaMia.it</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { accent: "#0c7ff2", paper: "#f4f3ee", ink: "#101010" },
+          fontFamily: { display: ["Bebas Neue", "sans-serif"], body: ["IBM Plex Sans", "sans-serif"] },
+          boxShadow: { brutal: "4px 4px 0 0 #000" }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: "IBM Plex Sans", sans-serif; background: #f4f3ee; }
+    .headline { font-family: "Bebas Neue", sans-serif; letter-spacing: 0.04em; }
+  </style>
+</head>
+<body class="text-ink">
+  <header class="border-b-4 border-black bg-white">
+    <div class="max-w-6xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
+      <h1 class="headline text-5xl">Pannello Admin</h1>
+      <a href="index.html" class="text-sm font-bold uppercase underline">Torna alla Home</a>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 md:px-8 py-8 space-y-8">
+    <section id="loginBox" class="border-4 border-black bg-white p-6 shadow-brutal max-w-xl">
+      <h2 class="headline text-4xl">Login</h2>
+      <p class="text-sm mt-1">Inserisci la password admin per gestire articoli e agenda.</p>
+      <form id="loginForm" class="mt-4 space-y-3">
+        <input id="password" type="password" required placeholder="Password admin" class="w-full border-2 border-black" />
+        <button type="submit" class="border-2 border-black bg-black text-white px-4 py-2 text-xs font-bold uppercase shadow-brutal">Accedi</button>
+      </form>
+      <p id="loginError" class="text-red-700 text-sm mt-3 hidden">Password non valida.</p>
+    </section>
+
+    <section id="adminPanel" class="hidden space-y-8">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <h2 class="headline text-4xl">Dashboard Admin</h2>
+        <div class="flex gap-2">
+          <button id="newItemBtn" class="border-2 border-black bg-accent text-white px-4 py-2 text-xs font-bold uppercase">Nuovo articolo</button>
+          <button id="logoutBtn" class="border-2 border-black bg-white px-4 py-2 text-xs font-bold uppercase">Logout</button>
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <button id="openContentArticlesBtn" class="border-2 border-black px-4 py-2 text-xs font-bold uppercase bg-black text-white">Gestione articoli</button>
+        <button id="openContentAgendaBtn" class="border-2 border-black px-4 py-2 text-xs font-bold uppercase bg-white">Gestione agenda</button>
+      </div>
+
+      <section id="articlesSection" class="space-y-8">
+        <div class="flex gap-2">
+          <button id="openArticlesViewBtn" class="border-2 border-black px-4 py-2 text-xs font-bold uppercase bg-black text-white">Modifica articoli</button>
+          <button id="openFeaturedViewBtn" class="border-2 border-black px-4 py-2 text-xs font-bold uppercase bg-white">Articoli in evidenza</button>
+        </div>
+
+        <section id="articlesView" class="space-y-8">
+          <form id="articleForm" class="border-4 border-black bg-white p-6 shadow-brutal space-y-4">
+            <input type="hidden" id="articleId" />
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label class="text-xs font-bold uppercase">Titolo</label>
+                <input id="title" required class="w-full border-2 border-black" />
+              </div>
+              <div>
+                <label class="text-xs font-bold uppercase">Categoria</label>
+                <input id="category" required class="w-full border-2 border-black" placeholder="Compiti, Eventi, Progetti..." />
+              </div>
+            </div>
+            <div>
+              <label class="text-xs font-bold uppercase">Estratto</label>
+              <textarea id="excerpt" required rows="2" class="w-full border-2 border-black"></textarea>
+            </div>
+            <div>
+              <label class="text-xs font-bold uppercase">Contenuto</label>
+              <textarea id="content" required rows="8" class="w-full border-2 border-black"></textarea>
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-bold uppercase">Foto articolo</label>
+              <input id="articleImageInput" type="file" accept="image/*" class="w-full border-2 border-black file:mr-3 file:border-0 file:bg-black file:px-3 file:py-2 file:text-xs file:font-bold file:uppercase file:text-white" />
+              <p class="text-[11px] text-slate-600">L'immagine viene adattata automaticamente in tutte le card e nel dettaglio articolo.</p>
+              <img id="articleImagePreview" alt="Anteprima foto articolo" class="hidden w-full max-h-56 object-cover border-2 border-black" />
+              <button type="button" id="removeArticleImageBtn" class="hidden border-2 border-black bg-white px-3 py-1 text-[11px] font-bold uppercase">Rimuovi foto</button>
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-bold uppercase">Allegati scaricabili</label>
+              <input id="articleAttachmentInput" type="file" multiple class="w-full border-2 border-black file:mr-3 file:border-0 file:bg-black file:px-3 file:py-2 file:text-xs file:font-bold file:uppercase file:text-white" />
+              <p class="text-[11px] text-slate-600">Puoi allegare PDF, MP4 e altri file. Gli utenti potranno scaricarli a fine articolo.</p>
+              <div id="articleAttachmentList" class="space-y-2"></div>
+            </div>
+            <label class="inline-flex items-center gap-2 font-semibold"><input id="published" type="checkbox" checked /> Pubblica subito</label>
+            <div class="flex gap-3">
+              <button type="submit" id="submitArticleBtn" class="border-2 border-black bg-accent text-white px-4 py-2 text-xs font-bold uppercase shadow-brutal">Salva Articolo</button>
+            </div>
+          </form>
+
+          <section class="border-4 border-black bg-white p-6 shadow-brutal">
+            <h3 class="headline text-3xl">Articoli salvati</h3>
+            <div id="adminArticles" class="mt-4 space-y-3"></div>
+          </section>
+        </section>
+
+        <section id="featuredView" class="hidden space-y-4 border-4 border-black bg-white p-6 shadow-brutal">
+          <h3 class="headline text-3xl">Scelta articoli in evidenza</h3>
+          <p class="text-sm">Seleziona gli articoli pubblicati da mostrare in home e riordina la lista in evidenza con drag &amp; drop.</p>
+          <div id="featuredManagerList" class="space-y-3"></div>
+        </section>
+      </section>
+
+      <section id="agendaSection" class="hidden space-y-8">
+        <form id="agendaForm" class="border-4 border-black bg-white p-6 shadow-brutal space-y-4">
+          <input type="hidden" id="agendaEventId" />
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold uppercase">Titolo evento</label>
+              <input id="agendaTitle" required class="w-full border-2 border-black" />
+            </div>
+            <div>
+              <label class="text-xs font-bold uppercase">Categoria</label>
+              <input id="agendaCategory" required class="w-full border-2 border-black" placeholder="Didattica, Istituto, Laboratori..." />
+            </div>
+          </div>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold uppercase">Data</label>
+              <input id="agendaDate" type="date" required class="w-full border-2 border-black" />
+            </div>
+            <div>
+              <label class="text-xs font-bold uppercase">Descrizione</label>
+              <input id="agendaDescription" required class="w-full border-2 border-black" />
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <button type="submit" id="submitAgendaBtn" class="border-2 border-black bg-accent text-white px-4 py-2 text-xs font-bold uppercase shadow-brutal">Salva Evento</button>
+          </div>
+        </form>
+
+        <section class="border-4 border-black bg-white p-6 shadow-brutal">
+          <h3 class="headline text-3xl">Eventi agenda</h3>
+          <div id="adminAgendaEvents" class="mt-4 space-y-3"></div>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "blogDeScuolaArticles";
+    const SETTINGS_KEY = "blogDeScuolaSettings";
+    const AGENDA_STORAGE_KEY = "blogDeScuolaAgendaEvents";
+    const SESSION_KEY = "blogDeScuolaAdmin";
+    const ADMIN_PASSWORD_HASH = "a0365dce74d2d516b09015aed8acf50721f1f2bdb09d6b08bd58da1ba20b6900";
+
+    const defaultArticles = [
+      { id: "seed-1", title: "Compiti settimanali - Classi seconde", category: "Compiti", excerpt: "Materiali e consegne per matematica, italiano e scienze.", content: "Pubblicazione di esempio.", published: true, createdAt: "2026-02-18T08:00:00.000Z", updatedAt: "2026-02-18T08:00:00.000Z" },
+      { id: "seed-2", title: "Open Day: programma completo", category: "Eventi", excerpt: "Orari, laboratori e visite guidate per nuovi iscritti.", content: "Pubblicazione di esempio.", published: true, createdAt: "2026-02-17T08:00:00.000Z", updatedAt: "2026-02-17T08:00:00.000Z" },
+      { id: "seed-3", title: "Giornale digitale degli studenti", category: "Progetti", excerpt: "Interviste, rubriche e lavori multimediali a cura della redazione.", content: "Pubblicazione di esempio.", published: true, createdAt: "2026-02-16T08:00:00.000Z", updatedAt: "2026-02-16T08:00:00.000Z" }
+    ];
+
+    const defaultAgendaEvents = [
+      { id: "evt-1", date: "2026-03-03", title: "Consigli di classe", category: "Didattica", description: "Riunione coordinatori e docenti per andamento classi." },
+      { id: "evt-2", date: "2026-03-08", title: "Mostra dei progetti artistici", category: "Progetti", description: "Esposizione lavori creativi degli studenti." },
+      { id: "evt-3", date: "2026-03-14", title: "Giochi matematici d'istituto", category: "Competizioni", description: "Sfida interna di logica e matematica." },
+      { id: "evt-4", date: "2026-03-20", title: "Assemblea studenti", category: "Istituto", description: "Aggiornamenti rappresentanti e proposte studentesche." },
+      { id: "evt-5", date: "2026-03-26", title: "Incontro orientamento", category: "Orientamento", description: "Presentazione percorsi di studio post-diploma." },
+      { id: "evt-6", date: "2026-04-05", title: "Open Lab Scienze", category: "Laboratori", description: "Sessione aperta con esperimenti guidati." }
+    ];
+
+    const loginBox = document.getElementById("loginBox");
+    const adminPanel = document.getElementById("adminPanel");
+    const loginForm = document.getElementById("loginForm");
+    const loginError = document.getElementById("loginError");
+
+    const articleForm = document.getElementById("articleForm");
+    const adminArticles = document.getElementById("adminArticles");
+    const featuredManagerList = document.getElementById("featuredManagerList");
+    const articleImageInput = document.getElementById("articleImageInput");
+    const articleImagePreview = document.getElementById("articleImagePreview");
+    const removeArticleImageBtn = document.getElementById("removeArticleImageBtn");
+    const articleAttachmentInput = document.getElementById("articleAttachmentInput");
+    const articleAttachmentList = document.getElementById("articleAttachmentList");
+
+    const agendaForm = document.getElementById("agendaForm");
+    const adminAgendaEvents = document.getElementById("adminAgendaEvents");
+
+    const articlesSection = document.getElementById("articlesSection");
+    const agendaSection = document.getElementById("agendaSection");
+
+    const articlesView = document.getElementById("articlesView");
+    const featuredView = document.getElementById("featuredView");
+
+    const openContentArticlesBtn = document.getElementById("openContentArticlesBtn");
+    const openContentAgendaBtn = document.getElementById("openContentAgendaBtn");
+    const openArticlesViewBtn = document.getElementById("openArticlesViewBtn");
+    const openFeaturedViewBtn = document.getElementById("openFeaturedViewBtn");
+    const newItemBtn = document.getElementById("newItemBtn");
+
+    let draggedFeaturedId = null;
+    let currentSection = "articles";
+    let currentArticleImageDataUrl = "";
+    let currentArticleAttachments = [];
+
+    function getArticles() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultArticles));
+        return [...defaultArticles];
+      }
+      try {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [...defaultArticles];
+      } catch {
+        return [...defaultArticles];
+      }
+    }
+
+    function saveArticles(articles) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(articles));
+    }
+
+    function getAgendaEvents() {
+      const raw = localStorage.getItem(AGENDA_STORAGE_KEY);
+      if (!raw) {
+        localStorage.setItem(AGENDA_STORAGE_KEY, JSON.stringify(defaultAgendaEvents));
+        return [...defaultAgendaEvents];
+      }
+      try {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [...defaultAgendaEvents];
+      } catch {
+        return [...defaultAgendaEvents];
+      }
+    }
+
+    function saveAgendaEvents(events) {
+      localStorage.setItem(AGENDA_STORAGE_KEY, JSON.stringify(events));
+    }
+
+    function getSettings() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+        return { featuredIds: Array.isArray(raw.featuredIds) ? raw.featuredIds : [] };
+      } catch {
+        return { featuredIds: [] };
+      }
+    }
+
+    function saveSettings(settings) {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    }
+
+    function sanitizeFeaturedIds(articles, featuredIds) {
+      const publishedIds = new Set(articles.filter((article) => article.published).map((article) => article.id));
+      return featuredIds.filter((id) => publishedIds.has(id));
+    }
+
+    function syncFeaturedSettings() {
+      const articles = getArticles();
+      const settings = getSettings();
+      const validFeaturedIds = sanitizeFeaturedIds(articles, settings.featuredIds);
+      if (validFeaturedIds.length !== settings.featuredIds.length) {
+        saveSettings({ featuredIds: validFeaturedIds });
+      }
+      return { articles, featuredIds: validFeaturedIds };
+    }
+
+    async function sha256(text) {
+      const buffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+      return Array.from(new Uint8Array(buffer)).map((b) => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    function formatDate(iso) {
+      return new Date(iso).toLocaleString("it-IT");
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function formatBytes(bytes) {
+      if (!bytes) return "0 B";
+      const units = ["B", "KB", "MB", "GB"];
+      let size = bytes;
+      let unit = 0;
+      while (size >= 1024 && unit < units.length - 1) {
+        size /= 1024;
+        unit += 1;
+      }
+      return `${size.toFixed(size >= 10 || unit === 0 ? 0 : 1)} ${units[unit]}`;
+    }
+
+    function renderAttachmentList() {
+      if (!currentArticleAttachments.length) {
+        articleAttachmentList.innerHTML = '<p class="text-[11px] text-slate-600">Nessun allegato caricato.</p>';
+        return;
+      }
+
+      articleAttachmentList.innerHTML = currentArticleAttachments.map((item) => `
+        <div class="border-2 border-black p-2 flex items-center justify-between gap-2">
+          <div class="min-w-0">
+            <p class="text-xs font-semibold truncate">${escapeHtml(item.name)}</p>
+            <p class="text-[11px] text-slate-600">${escapeHtml(item.type || "file")} • ${formatBytes(item.size || 0)}</p>
+          </div>
+          <button type="button" data-attachment-remove-id="${item.id}" class="border-2 border-black px-2 py-1 text-[10px] font-bold uppercase">Rimuovi</button>
+        </div>
+      `).join("");
+    }
+
+    function setContentSection(section) {
+      const showArticles = section === "articles";
+      currentSection = section;
+      articlesSection.classList.toggle("hidden", !showArticles);
+      agendaSection.classList.toggle("hidden", showArticles);
+      openContentArticlesBtn.className = `border-2 border-black px-4 py-2 text-xs font-bold uppercase ${showArticles ? "bg-black text-white" : "bg-white"}`;
+      openContentAgendaBtn.className = `border-2 border-black px-4 py-2 text-xs font-bold uppercase ${showArticles ? "bg-white" : "bg-black text-white"}`;
+      newItemBtn.textContent = showArticles ? "Nuovo articolo" : "Nuovo evento";
+    }
+
+    function setArticleSubView(view) {
+      const showEdit = view === "articles";
+      articlesView.classList.toggle("hidden", !showEdit);
+      featuredView.classList.toggle("hidden", showEdit);
+      openArticlesViewBtn.className = `border-2 border-black px-4 py-2 text-xs font-bold uppercase ${showEdit ? "bg-black text-white" : "bg-white"}`;
+      openFeaturedViewBtn.className = `border-2 border-black px-4 py-2 text-xs font-bold uppercase ${showEdit ? "bg-white" : "bg-black text-white"}`;
+    }
+
+    function setAuthUI() {
+      const isAuth = sessionStorage.getItem(SESSION_KEY) === "1";
+      loginBox.classList.toggle("hidden", isAuth);
+      adminPanel.classList.toggle("hidden", !isAuth);
+      if (!isAuth) {
+        setContentSection("articles");
+        setArticleSubView("articles");
+        return;
+      }
+      renderAdminArticles();
+      renderFeaturedManager();
+      renderAdminAgendaEvents();
+    }
+
+    function resetForm() {
+      articleForm.reset();
+      document.getElementById("articleId").value = "";
+      document.getElementById("published").checked = true;
+      document.getElementById("submitArticleBtn").textContent = "Salva Articolo";
+      currentArticleImageDataUrl = "";
+      articleImageInput.value = "";
+      articleImagePreview.classList.add("hidden");
+      articleImagePreview.removeAttribute("src");
+      removeArticleImageBtn.classList.add("hidden");
+      currentArticleAttachments = [];
+      articleAttachmentInput.value = "";
+      renderAttachmentList();
+    }
+
+    function startNewArticle() {
+      setContentSection("articles");
+      setArticleSubView("articles");
+      resetForm();
+      document.getElementById("title").focus();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function fillForm(article) {
+      setContentSection("articles");
+      setArticleSubView("articles");
+      document.getElementById("articleId").value = article.id;
+      document.getElementById("title").value = article.title;
+      document.getElementById("category").value = article.category;
+      document.getElementById("excerpt").value = article.excerpt;
+      document.getElementById("content").value = article.content;
+      document.getElementById("published").checked = article.published;
+      document.getElementById("submitArticleBtn").textContent = "Aggiorna Articolo";
+      currentArticleImageDataUrl = article.imageDataUrl || "";
+      articleImageInput.value = "";
+      if (currentArticleImageDataUrl) {
+        articleImagePreview.src = currentArticleImageDataUrl;
+        articleImagePreview.classList.remove("hidden");
+        removeArticleImageBtn.classList.remove("hidden");
+      } else {
+        articleImagePreview.classList.add("hidden");
+        articleImagePreview.removeAttribute("src");
+        removeArticleImageBtn.classList.add("hidden");
+      }
+      currentArticleAttachments = Array.isArray(article.attachments) ? article.attachments : [];
+      articleAttachmentInput.value = "";
+      renderAttachmentList();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderAdminArticles() {
+      const articles = getArticles().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+      if (!articles.length) {
+        adminArticles.innerHTML = '<p class="text-sm">Nessun articolo presente.</p>';
+        return;
+      }
+
+      adminArticles.innerHTML = articles.map((article) => `
+        <article class="border-2 border-black p-4">
+          <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+            <div>
+              ${article.imageDataUrl ? `<img src="${article.imageDataUrl}" alt="Anteprima ${article.title}" class="w-20 h-20 object-cover border-2 border-black mb-2" />` : ""}
+              <p class="text-xs uppercase font-bold text-accent">${article.category}</p>
+              <h4 class="text-lg font-semibold">${article.title}</h4>
+              <p class="text-sm mt-1">${article.excerpt}</p>
+              <p class="text-xs mt-2">Ultimo aggiornamento: ${formatDate(article.updatedAt)} | Stato: ${article.published ? "Pubblicato" : "Bozza"} | Allegati: ${(article.attachments || []).length}</p>
+            </div>
+            <div class="flex flex-wrap gap-2 md:justify-end">
+              <a href="article.html?id=${encodeURIComponent(article.id)}" class="border-2 border-black px-3 py-1 text-xs font-bold uppercase">Apri</a>
+              <button data-action="edit" data-id="${article.id}" class="border-2 border-black px-3 py-1 text-xs font-bold uppercase">Modifica</button>
+              <button data-action="toggle" data-id="${article.id}" class="border-2 border-black px-3 py-1 text-xs font-bold uppercase">${article.published ? "Sposta in bozza" : "Pubblica"}</button>
+              <button data-action="delete" data-id="${article.id}" class="border-2 border-black px-3 py-1 text-xs font-bold uppercase text-red-700">Elimina</button>
+            </div>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderFeaturedManager() {
+      const { articles, featuredIds } = syncFeaturedSettings();
+      const published = articles
+        .filter((article) => article.published)
+        .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+      if (!published.length) {
+        featuredManagerList.innerHTML = '<p class="text-sm">Non ci sono articoli pubblicati da mettere in evidenza.</p>';
+        return;
+      }
+
+      const featuredSet = new Set(featuredIds);
+      const featuredArticles = featuredIds
+        .map((id) => published.find((article) => article.id === id))
+        .filter(Boolean);
+
+      const featuredOrderHtml = featuredArticles.length
+        ? featuredArticles.map((article, index) => `
+            <article draggable="true" data-drag-id="${article.id}" class="border-2 border-black bg-yellow-100 p-3 cursor-move">
+              <div class="flex items-center justify-between gap-2">
+                <div>
+                  <p class="text-xs uppercase font-bold text-accent">${article.category}</p>
+                  <h4 class="font-semibold">${article.title}</h4>
+                  <p class="text-xs mt-1 text-amber-700">★ In evidenza #${index + 1}</p>
+                </div>
+                <button data-feature-action="remove" data-id="${article.id}" class="border-2 border-black px-2 py-1 text-[10px] font-bold uppercase bg-white">Rimuovi</button>
+              </div>
+            </article>
+          `).join("")
+        : '<p class="text-sm">Nessun articolo selezionato.</p>';
+
+      const allPublishedHtml = published.map((article) => {
+        const isSelected = featuredSet.has(article.id);
+        return `
+          <article class="border-2 border-black p-3 ${isSelected ? "bg-yellow-100" : "bg-white"}">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <p class="text-xs uppercase font-bold text-accent">${article.category}</p>
+                <h4 class="font-semibold">${article.title}</h4>
+                <p class="text-xs mt-1 ${isSelected ? "text-amber-700 font-semibold" : "text-slate-500"}">${isSelected ? "★ Già in evidenza" : "○ Non in evidenza"}</p>
+              </div>
+              <button data-feature-action="${isSelected ? "remove" : "add"}" data-id="${article.id}" class="border-2 border-black px-3 py-1 text-xs font-bold uppercase ${isSelected ? "bg-white" : "bg-accent text-white"}">${isSelected ? "Rimuovi" : "Aggiungi"}</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      featuredManagerList.innerHTML = `
+        <div class="grid lg:grid-cols-2 gap-4">
+          <section class="border-2 border-black p-4">
+            <h4 class="text-xs font-bold uppercase mb-2">Ordine in evidenza (drag & drop)</h4>
+            <div id="featuredOrderList" class="space-y-2">${featuredOrderHtml}</div>
+          </section>
+          <section class="border-2 border-black p-4">
+            <h4 class="text-xs font-bold uppercase mb-2">Tutti gli articoli pubblicati</h4>
+            <div class="space-y-2">${allPublishedHtml}</div>
+          </section>
+        </div>
+      `;
+    }
+
+    function updateFeatured(action, id) {
+      const { articles, featuredIds } = syncFeaturedSettings();
+      const publishedIds = new Set(articles.filter((article) => article.published).map((article) => article.id));
+      if (!publishedIds.has(id)) return;
+
+      const next = [...featuredIds];
+      const index = next.indexOf(id);
+      if (action === "add" && index === -1) next.push(id);
+      if (action === "remove" && index >= 0) next.splice(index, 1);
+
+      saveSettings({ featuredIds: next });
+      renderFeaturedManager();
+    }
+
+    function reorderFeaturedByDrag(fromId, toId) {
+      if (!fromId || !toId || fromId === toId) return;
+      const { featuredIds } = syncFeaturedSettings();
+      const fromIndex = featuredIds.indexOf(fromId);
+      const toIndex = featuredIds.indexOf(toId);
+      if (fromIndex < 0 || toIndex < 0) return;
+
+      const next = [...featuredIds];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+      saveSettings({ featuredIds: next });
+      renderFeaturedManager();
+    }
+
+    function resetAgendaForm() {
+      agendaForm.reset();
+      document.getElementById("agendaEventId").value = "";
+      document.getElementById("submitAgendaBtn").textContent = "Salva Evento";
+    }
+
+    function startNewEvent() {
+      setContentSection("agenda");
+      resetAgendaForm();
+      document.getElementById("agendaTitle").focus();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function fillAgendaForm(eventData) {
+      setContentSection("agenda");
+      document.getElementById("agendaEventId").value = eventData.id;
+      document.getElementById("agendaTitle").value = eventData.title;
+      document.getElementById("agendaCategory").value = eventData.category;
+      document.getElementById("agendaDate").value = eventData.date;
+      document.getElementById("agendaDescription").value = eventData.description;
+      document.getElementById("submitAgendaBtn").textContent = "Aggiorna Evento";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderAdminAgendaEvents() {
+      const events = getAgendaEvents().sort((a, b) => new Date(a.date) - new Date(b.date));
+      if (!events.length) {
+        adminAgendaEvents.innerHTML = '<p class="text-sm">Nessun evento presente.</p>';
+        return;
+      }
+
+      adminAgendaEvents.innerHTML = events.map((eventData) => `
+        <article class="border-2 border-black p-4">
+          <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+            <div>
+              <p class="text-xs uppercase font-bold text-accent">${eventData.category}</p>
+              <h4 class="text-lg font-semibold">${eventData.title}</h4>
+              <p class="text-sm mt-1">${eventData.description}</p>
+              <p class="text-xs mt-2">Data: ${new Date(eventData.date).toLocaleDateString("it-IT")}</p>
+            </div>
+            <div class="flex flex-wrap gap-2 md:justify-end">
+              <button data-agenda-action="edit" data-id="${eventData.id}" class="border-2 border-black px-3 py-1 text-xs font-bold uppercase">Modifica</button>
+              <button data-agenda-action="delete" data-id="${eventData.id}" class="border-2 border-black px-3 py-1 text-xs font-bold uppercase text-red-700">Elimina</button>
+            </div>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const pass = document.getElementById("password").value;
+      const hash = await sha256(pass);
+      if (hash === ADMIN_PASSWORD_HASH) {
+        sessionStorage.setItem(SESSION_KEY, "1");
+        loginError.classList.add("hidden");
+        document.getElementById("password").value = "";
+        setAuthUI();
+        return;
+      }
+      loginError.classList.remove("hidden");
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      sessionStorage.removeItem(SESSION_KEY);
+      setAuthUI();
+    });
+
+    openContentArticlesBtn.addEventListener("click", () => {
+      setContentSection("articles");
+      setArticleSubView("articles");
+    });
+
+    openContentAgendaBtn.addEventListener("click", () => {
+      setContentSection("agenda");
+      renderAdminAgendaEvents();
+    });
+
+    openArticlesViewBtn.addEventListener("click", () => setArticleSubView("articles"));
+    openFeaturedViewBtn.addEventListener("click", () => {
+      setArticleSubView("featured");
+      renderFeaturedManager();
+    });
+
+    newItemBtn.addEventListener("click", () => {
+      if (currentSection === "agenda") {
+        startNewEvent();
+        return;
+      }
+      startNewArticle();
+    });
+
+    articleImageInput.addEventListener("change", () => {
+      const file = articleImageInput.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        currentArticleImageDataUrl = typeof reader.result === "string" ? reader.result : "";
+        if (!currentArticleImageDataUrl) return;
+        articleImagePreview.src = currentArticleImageDataUrl;
+        articleImagePreview.classList.remove("hidden");
+        removeArticleImageBtn.classList.remove("hidden");
+      };
+      reader.readAsDataURL(file);
+    });
+
+    removeArticleImageBtn.addEventListener("click", () => {
+      currentArticleImageDataUrl = "";
+      articleImageInput.value = "";
+      articleImagePreview.classList.add("hidden");
+      articleImagePreview.removeAttribute("src");
+      removeArticleImageBtn.classList.add("hidden");
+    });
+
+    articleAttachmentInput.addEventListener("change", async () => {
+      const files = Array.from(articleAttachmentInput.files || []);
+      if (!files.length) return;
+
+      const toAttachment = (file) => new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const dataUrl = typeof reader.result === "string" ? reader.result : "";
+          resolve({
+            id: `att-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            dataUrl
+          });
+        };
+        reader.readAsDataURL(file);
+      });
+
+      const newAttachments = await Promise.all(files.map(toAttachment));
+      currentArticleAttachments = currentArticleAttachments.concat(newAttachments.filter((item) => item.dataUrl));
+      articleAttachmentInput.value = "";
+      renderAttachmentList();
+    });
+
+    articleAttachmentList.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const removeId = target.dataset.attachmentRemoveId;
+      if (!removeId) return;
+      currentArticleAttachments = currentArticleAttachments.filter((item) => item.id !== removeId);
+      renderAttachmentList();
+    });
+
+    articleForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const now = new Date().toISOString();
+      const id = document.getElementById("articleId").value;
+      const payload = {
+        id: id || `art-${Date.now()}`,
+        title: document.getElementById("title").value.trim(),
+        category: document.getElementById("category").value.trim(),
+        excerpt: document.getElementById("excerpt").value.trim(),
+        content: document.getElementById("content").value.trim(),
+        imageDataUrl: currentArticleImageDataUrl || "",
+        attachments: currentArticleAttachments,
+        published: document.getElementById("published").checked,
+        updatedAt: now
+      };
+
+      const articles = getArticles();
+      const existingIndex = articles.findIndex((article) => article.id === payload.id);
+
+      if (existingIndex >= 0) {
+        payload.createdAt = articles[existingIndex].createdAt;
+        articles[existingIndex] = payload;
+      } else {
+        payload.createdAt = now;
+        articles.push(payload);
+      }
+
+      saveArticles(articles);
+      syncFeaturedSettings();
+      resetForm();
+      renderAdminArticles();
+      renderFeaturedManager();
+    });
+
+    agendaForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const id = document.getElementById("agendaEventId").value;
+      const payload = {
+        id: id || `evt-${Date.now()}`,
+        title: document.getElementById("agendaTitle").value.trim(),
+        category: document.getElementById("agendaCategory").value.trim(),
+        date: document.getElementById("agendaDate").value,
+        description: document.getElementById("agendaDescription").value.trim()
+      };
+
+      const events = getAgendaEvents();
+      const existingIndex = events.findIndex((eventData) => eventData.id === payload.id);
+
+      if (existingIndex >= 0) {
+        events[existingIndex] = payload;
+      } else {
+        events.push(payload);
+      }
+
+      saveAgendaEvents(events);
+      resetAgendaForm();
+      renderAdminAgendaEvents();
+    });
+
+    adminArticles.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const action = target.dataset.action;
+      const id = target.dataset.id;
+      if (!action || !id) return;
+
+      const articles = getArticles();
+      const index = articles.findIndex((article) => article.id === id);
+      if (index === -1) return;
+
+      if (action === "edit") {
+        fillForm(articles[index]);
+        return;
+      }
+
+      if (action === "toggle") {
+        articles[index].published = !articles[index].published;
+        articles[index].updatedAt = new Date().toISOString();
+        saveArticles(articles);
+        syncFeaturedSettings();
+        renderAdminArticles();
+        renderFeaturedManager();
+        return;
+      }
+
+      if (action === "delete") {
+        const ok = confirm("Vuoi eliminare definitivamente questo articolo?");
+        if (!ok) return;
+        articles.splice(index, 1);
+        saveArticles(articles);
+        syncFeaturedSettings();
+        renderAdminArticles();
+        renderFeaturedManager();
+      }
+    });
+
+    adminAgendaEvents.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const action = target.dataset.agendaAction;
+      const id = target.dataset.id;
+      if (!action || !id) return;
+
+      const events = getAgendaEvents();
+      const index = events.findIndex((eventData) => eventData.id === id);
+      if (index === -1) return;
+
+      if (action === "edit") {
+        fillAgendaForm(events[index]);
+        return;
+      }
+
+      if (action === "delete") {
+        const ok = confirm("Vuoi eliminare definitivamente questo evento?");
+        if (!ok) return;
+        events.splice(index, 1);
+        saveAgendaEvents(events);
+        renderAdminAgendaEvents();
+      }
+    });
+
+    featuredManagerList.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const action = target.dataset.featureAction;
+      const id = target.dataset.id;
+      if (!action || !id) return;
+      updateFeatured(action, id);
+    });
+
+    featuredManagerList.addEventListener("dragstart", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const card = target.closest("[data-drag-id]");
+      if (!(card instanceof HTMLElement)) return;
+
+      draggedFeaturedId = card.dataset.dragId || null;
+      if (event.dataTransfer && draggedFeaturedId) {
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", draggedFeaturedId);
+      }
+      card.classList.add("opacity-60");
+    });
+
+    featuredManagerList.addEventListener("dragover", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const card = target.closest("[data-drag-id]");
+      if (!(card instanceof HTMLElement)) return;
+
+      event.preventDefault();
+      featuredManagerList.querySelectorAll("[data-drag-id]").forEach((el) => el.classList.remove("ring-2", "ring-accent"));
+      card.classList.add("ring-2", "ring-accent");
+    });
+
+    featuredManagerList.addEventListener("drop", (event) => {
+      event.preventDefault();
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const card = target.closest("[data-drag-id]");
+      if (!(card instanceof HTMLElement)) return;
+
+      const dropId = card.dataset.dragId || null;
+      reorderFeaturedByDrag(draggedFeaturedId, dropId);
+      draggedFeaturedId = null;
+    });
+
+    featuredManagerList.addEventListener("dragend", () => {
+      draggedFeaturedId = null;
+      featuredManagerList.querySelectorAll("[data-drag-id]").forEach((el) => el.classList.remove("opacity-60", "ring-2", "ring-accent"));
+    });
+
+    renderAttachmentList();
+    sessionStorage.removeItem(SESSION_KEY);
+    setAuthUI();
+  </script>
+</body>
+</html>

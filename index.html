@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="it" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScolaMia.it - Home</title>
+  <meta name="description" content="Blog scolastico ufficiale con notizie, compiti, progetti e articoli creati dagli admin." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            accent: "#0c7ff2",
+            paper: "#f4f3ee",
+            ink: "#101010",
+            marker: "#ffe66d"
+          },
+          fontFamily: {
+            display: ["Bebas Neue", "sans-serif"],
+            body: ["IBM Plex Sans", "sans-serif"]
+          },
+          boxShadow: {
+            brutal: "4px 4px 0 0 #000"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root { --grid-line: rgba(0, 0, 0, 0.08); }
+    body {
+      font-family: "IBM Plex Sans", sans-serif;
+      background:
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+        #f4f3ee;
+      background-size: 28px 28px;
+    }
+    .headline { font-family: "Bebas Neue", sans-serif; letter-spacing: 0.04em; }
+    .lift:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 0 #000; }
+    .stagger { opacity: 0; transform: translateY(14px); animation: rise 0.5s ease forwards; }
+    .stagger:nth-child(2) { animation-delay: 0.1s; }
+    .stagger:nth-child(3) { animation-delay: 0.2s; }
+    .stagger:nth-child(4) { animation-delay: 0.3s; }
+    @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body class="text-ink">
+  <div class="min-h-screen flex flex-col">
+    <header class="sticky top-0 z-50 bg-paper border-b-4 border-black">
+      <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between gap-4">
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="border-2 border-black bg-accent p-1.5">
+            <span class="material-symbols-outlined text-white block">school</span>
+          </div>
+          <div>
+            <p class="headline text-3xl leading-none">ScolaMia.it</p>
+            <p class="text-xs font-semibold uppercase tracking-wider">Istituto Comprensivo</p>
+          </div>
+        </a>
+        <nav class="hidden md:flex items-center gap-6 text-sm font-bold uppercase">
+          <a href="archivio.html" class="hover:text-accent">Articoli</a>
+          <a href="agenda.html" class="hover:text-accent">Agenda</a>
+          <a href="contatti.html" class="hover:text-accent">Contatti</a>
+        </nav>
+        <div class="flex items-center gap-2">
+          <form id="homeSearchForm" class="flex items-center border-2 border-black bg-white">
+            <span class="material-symbols-outlined text-base px-2">search</span>
+            <input id="homeSearchInput" type="search" placeholder="Cerca ovunque" class="border-0 focus:ring-0 text-xs font-semibold py-2 w-28 md:w-36" />
+          </form>
+          <a href="admin.html" class="border-2 border-black bg-black text-white px-4 py-2 text-xs font-bold uppercase shadow-brutal lift transition-all">Login Admin</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1">
+      <section class="max-w-7xl mx-auto px-4 md:px-8 pt-10 md:pt-14 pb-8">
+        <div class="border-4 border-black bg-white shadow-brutal overflow-hidden">
+          <div class="grid lg:grid-cols-5">
+            <div class="lg:col-span-3 p-6 md:p-10 border-b-4 lg:border-b-0 lg:border-r-4 border-black">
+              <p class="inline-block bg-marker border-2 border-black px-3 py-1 text-xs font-bold uppercase">Nuova pubblicazione</p>
+              <h1 class="headline text-6xl md:text-8xl mt-4 leading-[0.9]">La scuola raccontata dagli studenti</h1>
+              <p class="mt-4 max-w-xl text-base md:text-lg font-medium">News, compiti, progetti e appuntamenti in un unico spazio creato solo per gli studenti.</p>
+              <div class="mt-7 flex flex-wrap gap-3">
+                <a href="archivio.html" class="border-2 border-black bg-accent text-white px-5 py-2.5 text-sm font-bold uppercase shadow-brutal lift transition-all">Leggi gli articoli</a>
+                <a href="agenda.html" class="border-2 border-black bg-white px-5 py-2.5 text-sm font-bold uppercase shadow-brutal lift transition-all">Prossimi eventi</a>
+              </div>
+            </div>
+            <div class="lg:col-span-2 bg-black text-white p-6 md:p-8">
+              <h2 class="headline text-4xl">In evidenza</h2>
+              <div id="featuredArticles" class="mt-6 space-y-4 text-sm"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="articoli" class="max-w-7xl mx-auto px-4 md:px-8 pb-8">
+        <div class="flex items-end justify-between gap-4 mb-5">
+          <h2 class="headline text-5xl">Ultimi articoli</h2>
+          <a href="archivio.html" class="text-xs font-bold uppercase underline decoration-2">Vedi archivio</a>
+        </div>
+        <div id="articlesGrid" class="grid md:grid-cols-3 gap-5"></div>
+      </section>
+
+      <section id="eventi" class="max-w-7xl mx-auto px-4 md:px-8 pb-12">
+        <div class="mb-4 flex justify-end">
+          <a href="agenda.html" class="border-2 border-black bg-white px-4 py-2 text-xs font-bold uppercase shadow-brutal lift transition-all">Vai all'agenda completa</a>
+        </div>
+        <div class="border-4 border-black bg-accent text-white shadow-brutal p-6 md:p-8">
+          <h2 class="headline text-5xl">Agenda scuola</h2>
+          <div class="mt-5 grid md:grid-cols-3 gap-4">
+            <div class="border-2 border-white p-4"><p class="text-xs uppercase font-bold">03 Marzo</p><p class="mt-1 font-semibold">Consigli di classe</p></div>
+            <div class="border-2 border-white p-4"><p class="text-xs uppercase font-bold">08 Marzo</p><p class="mt-1 font-semibold">Mostra dei progetti artistici</p></div>
+            <div class="border-2 border-white p-4"><p class="text-xs uppercase font-bold">14 Marzo</p><p class="mt-1 font-semibold">Giochi matematici d'istituto</p></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t-4 border-black bg-black text-white">
+      <div class="max-w-7xl mx-auto px-4 md:px-8 py-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div>
+          <p class="headline text-4xl">ScolaMia.it</p>
+          <p class="text-sm opacity-80">Via della Conoscenza 12, Italia | <a href="contatti.html" class="underline">Contatti</a></p>
+        </div>
+        <div class="text-xs uppercase font-bold tracking-wide">Aggiornato ogni settimana dalla redazione scolastica</div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "blogDeScuolaArticles";
+    const SETTINGS_KEY = "blogDeScuolaSettings";
+    const defaultArticles = [
+      {
+        id: "seed-1",
+        title: "Compiti settimanali - Classi seconde",
+        category: "Compiti",
+        excerpt: "Materiali e consegne per matematica, italiano e scienze.",
+        content: "Pubblicazione di esempio.",
+        published: true,
+        createdAt: "2026-02-18T08:00:00.000Z",
+        updatedAt: "2026-02-18T08:00:00.000Z"
+      },
+      {
+        id: "seed-2",
+        title: "Open Day: programma completo",
+        category: "Eventi",
+        excerpt: "Orari, laboratori e visite guidate per nuovi iscritti.",
+        content: "Pubblicazione di esempio.",
+        published: true,
+        createdAt: "2026-02-17T08:00:00.000Z",
+        updatedAt: "2026-02-17T08:00:00.000Z"
+      },
+      {
+        id: "seed-3",
+        title: "Giornale digitale degli studenti",
+        category: "Progetti",
+        excerpt: "Interviste, rubriche e lavori multimediali a cura della redazione.",
+        content: "Pubblicazione di esempio.",
+        published: true,
+        createdAt: "2026-02-16T08:00:00.000Z",
+        updatedAt: "2026-02-16T08:00:00.000Z"
+      }
+    ];
+
+    function getArticles() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultArticles));
+        return [...defaultArticles];
+      }
+      try {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [...defaultArticles];
+      } catch {
+        return [...defaultArticles];
+      }
+    }
+
+    function getSettings() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+        return { featuredIds: Array.isArray(parsed.featuredIds) ? parsed.featuredIds : [] };
+      } catch {
+        return { featuredIds: [] };
+      }
+    }
+
+    function renderArticles() {
+      const all = getArticles();
+      const published = all
+        .filter((article) => article.published)
+        .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+      const top = published.slice(0, 3);
+      const settings = getSettings();
+      const grid = document.getElementById("articlesGrid");
+      const featured = document.getElementById("featuredArticles");
+
+      if (top.length === 0) {
+        grid.innerHTML = '<div class="md:col-span-3 border-2 border-black bg-white p-5 shadow-brutal">Nessun articolo pubblicato.</div>';
+        featured.innerHTML = '<div class="border-2 border-white/60 p-4">Nessun contenuto in evidenza.</div>';
+        return;
+      }
+
+      grid.innerHTML = top.map((article) => `
+        <article class="border-2 border-black bg-white p-5 shadow-brutal lift transition-all">
+          ${article.imageDataUrl ? `<div class="mb-3 border-2 border-black aspect-[16/9] overflow-hidden"><img src="${article.imageDataUrl}" alt="Immagine ${article.title}" class="w-full h-full object-cover" /></div>` : ""}
+          <p class="text-xs font-bold uppercase text-accent">${article.category}</p>
+          <h3 class="mt-2 text-xl font-semibold">${article.title}</h3>
+          <p class="mt-2 text-sm">${article.excerpt}</p>
+          <a class="inline-block mt-4 text-xs font-bold uppercase underline" href="article.html?id=${encodeURIComponent(article.id)}">Leggi</a>
+        </article>
+      `).join("");
+
+      const featuredIds = settings.featuredIds.filter((id) => published.some((article) => article.id === id));
+      const featuredArticles = (featuredIds.length > 0
+        ? featuredIds.map((id) => published.find((article) => article.id === id)).filter(Boolean)
+        : top
+      ).slice(0, 3);
+
+      featured.innerHTML = featuredArticles.map((article, index) => `
+        <a href="article.html?id=${encodeURIComponent(article.id)}" class="stagger block border-2 border-white/60 p-4 hover:bg-white hover:text-black transition-colors" style="animation-delay:${index * 0.1}s">
+          ${article.imageDataUrl ? `<div class="mb-2 border border-white/60 aspect-[16/9] overflow-hidden"><img src="${article.imageDataUrl}" alt="Immagine ${article.title}" class="w-full h-full object-cover" /></div>` : ""}
+          <p class="text-xs uppercase opacity-70">${article.category}</p>
+          <h3 class="font-semibold mt-1">${article.title}</h3>
+        </a>
+      `).join("");
+    }
+
+    document.getElementById("homeSearchForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const query = document.getElementById("homeSearchInput").value.trim();
+      const url = query ? `ricerca.html?q=${encodeURIComponent(query)}` : "ricerca.html";
+      window.location.href = url;
+    });
+
+    renderArticles();
+  </script>
+</body>
+</html>

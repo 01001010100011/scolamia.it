@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="it" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contatti - ScolaMia.it</title>
+  <meta name="description" content="Contatti del blog scolastico." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { accent: "#0c7ff2", paper: "#f4f3ee", ink: "#101010" },
+          fontFamily: { display: ["Bebas Neue", "sans-serif"], body: ["IBM Plex Sans", "sans-serif"] },
+          boxShadow: { brutal: "4px 4px 0 0 #000" }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: "IBM Plex Sans", sans-serif; background: #f4f3ee; }
+    .headline { font-family: "Bebas Neue", sans-serif; letter-spacing: .04em; }
+  </style>
+</head>
+<body class="text-ink">
+  <header class="sticky top-0 z-50 bg-paper border-b-4 border-black">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between gap-4">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="border-2 border-black bg-accent p-1.5">
+          <span class="material-symbols-outlined text-white block">school</span>
+        </div>
+        <div>
+          <p class="headline text-3xl leading-none">ScolaMia.it</p>
+          <p class="text-xs font-semibold uppercase tracking-wider">Contatti</p>
+        </div>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-bold uppercase">
+        <a href="archivio.html" class="hover:text-accent">Articoli</a>
+        <a href="agenda.html" class="hover:text-accent">Agenda</a>
+        <a href="contatti.html" class="text-accent">Contatti</a>
+      </nav>
+      <a href="admin.html" class="border-2 border-black bg-black text-white px-4 py-2 text-xs font-bold uppercase shadow-brutal">Login Admin</a>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 md:px-8 py-8">
+    <section class="border-4 border-black bg-white p-6 md:p-8 shadow-brutal">
+      <h1 class="headline text-6xl">Contatti</h1>
+      <p class="mt-2 text-sm">Contatti di prova del blog scolastico.</p>
+
+      <div class="mt-6 grid md:grid-cols-2 gap-4">
+        <article class="border-2 border-black p-4">
+          <p class="text-xs uppercase font-bold text-accent">Redazione studenti</p>
+          <p class="mt-2 font-semibold">redazione.studenti@scolamia-demo.it</p>
+        </article>
+        <article class="border-2 border-black p-4">
+          <p class="text-xs uppercase font-bold text-accent">Supporto tecnico</p>
+          <p class="mt-2 font-semibold">supporto.tech@scolamia-demo.it</p>
+        </article>
+        <article class="border-2 border-black p-4">
+          <p class="text-xs uppercase font-bold text-accent">Segreteria</p>
+          <p class="mt-2 font-semibold">segreteria@scolamia-demo.it</p>
+        </article>
+        <article class="border-2 border-black p-4">
+          <p class="text-xs uppercase font-bold text-accent">Instagram</p>
+          <a href="https://instagram.com/scolamia_demo" target="_blank" rel="noreferrer" class="mt-2 inline-block font-semibold underline">@scolamia_demo</a>
+        </article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Article View - Student Perspective</title>
+<!-- Google Fonts: Space Grotesk & Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2b8cee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"]
+                    },
+                    borderWidth: {
+                        '3': '3px',
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #f6f7f8;
+        }
+        .brutalist-shadow {
+            box-shadow: 4px 4px 0px 0px #000;
+        }
+        .brutalist-shadow-sm {
+            box-shadow: 2px 2px 0px 0px #000;
+        }
+        .mono-content {
+            font-family: ui-monospace, 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body class="bg-background-light text-slate-900 selection:bg-primary selection:text-white">
+<!-- Reading Progress Bar -->
+<div class="fixed top-0 left-0 w-full h-2 bg-slate-200 z-50">
+<div class="h-full bg-primary" style="width: 35%;"></div>
+</div>
+<div class="min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<nav class="border-b-4 border-black px-6 md:px-12 py-6 flex items-center justify-between sticky top-2 bg-background-light z-40">
+<div class="flex items-center gap-4">
+<div class="bg-primary p-1 border-2 border-black">
+<span class="material-symbols-outlined text-white text-3xl block">school</span>
+</div>
+<h2 class="text-xl md:text-2xl font-extrabold tracking-tighter uppercase">Student Perspective</h2>
+</div>
+<div class="hidden md:flex items-center gap-10 font-bold uppercase text-sm tracking-widest">
+<a class="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary" href="#">Archives</a>
+<a class="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary" href="#">Lab</a>
+<a class="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary" href="#">About</a>
+<button class="bg-black text-white px-6 py-2 brutalist-shadow-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all border-2 border-black">
+                    Login
+                </button>
+</div>
+</nav>
+<!-- Main Layout Container -->
+<main class="flex-grow flex flex-col md:flex-row border-b-4 border-black">
+<!-- Sidebar: Left (Author Info) -->
+<aside class="w-full md:w-80 border-b-4 md:border-b-0 md:border-r-4 border-black p-8 bg-slate-100/50">
+<div class="sticky top-24 space-y-10">
+<!-- ID Card Block -->
+<div class="border-4 border-black bg-white p-6 brutalist-shadow">
+<div class="flex justify-between items-start mb-6">
+<div class="w-16 h-16 border-2 border-black bg-slate-200 overflow-hidden">
+<img alt="Student Portrait" class="w-full h-full object-cover grayscale" data-alt="Grayscale portrait of a student researcher looking serious" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASXOwa77jj0c7DumpejphB84QF9dt9cnhhsGv-3Eo6UamwOTWHt50c2ZAoDWEYQz5rbC7MW32aLm_AB5yPNd9atkYZZKaFIindmbNYtgkcSN_A67txfODYYwiziZlX2JQ9Pyk7QT1FguJoCZBSRdmGecPXgXJch_ru3YyiMNo8YDW-yFzE-38d-NNbLdjBYzkiXxEq2ozCnM0CKTTDtfEdIHGuNqNhk6812ehmgEAdOEzZUCTEBEKgXXCOmDPhtu6xUnoJGqENSuoU"/>
+</div>
+<div class="text-right">
+<span class="block text-[10px] font-black uppercase opacity-50">Status</span>
+<span class="bg-primary text-white text-[10px] font-bold px-2 py-0.5 border border-black uppercase">Verified</span>
+</div>
+</div>
+<div class="space-y-4">
+<div>
+<h3 class="text-xs font-black uppercase tracking-widest text-slate-400">Contributor</h3>
+<p class="text-lg font-extrabold font-mono">STUDENT_4829</p>
+</div>
+<div>
+<h3 class="text-xs font-black uppercase tracking-widest text-slate-400">Registry</h3>
+<p class="text-sm font-bold font-mono">Undergrad_Year_3</p>
+</div>
+<div class="pt-4 border-t-2 border-black border-dashed">
+<p class="text-[10px] font-mono leading-tight">SYSTEMS_ARCH_V2.01<br/>LOCAL_TIME: 14:48:02</p>
+</div>
+</div>
+</div>
+<!-- Article Meta -->
+<div class="space-y-6">
+<div class="space-y-2">
+<h4 class="text-sm font-black uppercase">Reading Time</h4>
+<div class="flex items-center gap-2 border-2 border-black bg-white p-3 font-mono text-sm font-bold brutalist-shadow-sm">
+<span class="material-symbols-outlined">timer</span>
+                                12 MIN READ
+                            </div>
+</div>
+<div class="space-y-2">
+<h4 class="text-sm font-black uppercase">Taxonomy</h4>
+<div class="flex flex-wrap gap-2">
+<span class="border-2 border-black bg-primary/20 px-3 py-1 text-xs font-bold uppercase">#LOGIC</span>
+<span class="border-2 border-black bg-primary/20 px-3 py-1 text-xs font-bold uppercase">#SYSTEMS</span>
+<span class="border-2 border-black bg-primary/20 px-3 py-1 text-xs font-bold uppercase">#PEDAGOGY</span>
+<span class="border-2 border-black bg-primary/20 px-3 py-1 text-xs font-bold uppercase">#CALCULUS</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content: Article Area -->
+<article class="flex-1 bg-white">
+<!-- Hero Header -->
+<header class="p-8 md:p-16 border-b-4 border-black bg-primary/5">
+<div class="mb-6 flex gap-2 text-sm font-bold uppercase text-primary">
+<a class="hover:underline" href="#">Home</a>
+<span>/</span>
+<a class="hover:underline" href="#">Academic Blog</a>
+<span>/</span>
+<span class="text-slate-500">Advanced Calculus</span>
+</div>
+<h1 class="text-5xl md:text-8xl font-black leading-[0.9] tracking-tighter uppercase break-words">
+                        The Architecture <br/> of Advanced <br/> <span class="text-primary italic">Calculus</span>
+</h1>
+<p class="mt-8 text-xl md:text-2xl font-medium max-w-2xl border-l-4 border-black pl-6 py-2">
+                        A deep dive into structural logic, pedagogical systems, and the inherent beauty of mathematical frameworks.
+                    </p>
+</header>
+<!-- Article Body -->
+<div class="p-8 md:p-16 max-w-4xl mx-auto space-y-12">
+<div class="mono-content text-lg leading-relaxed text-slate-800 space-y-8">
+<p>
+                            Mathematics is often perceived as a collection of tools, yet it is more accurately described as an architectural endeavor. In advanced calculus, we move beyond the mechanics of derivation into the realm of structured proof and manifold logic.
+                        </p>
+<div class="bg-black text-white p-8 border-4 border-primary brutalist-shadow">
+<h2 class="text-2xl font-black uppercase mb-4 tracking-tighter">I. THE RIGOR OF SYSTEMS</h2>
+<p class="font-mono text-sm opacity-90 leading-relaxed">
+                                Systemic failure in pedagogy often stems from a lack of structural visualization. When we treat a limit not as a destination but as a boundary condition of a space, the logic shifts. The student is no longer a calculator; they are an urban planner of numerical dimensions.
+                            </p>
+</div>
+<p>
+                            Consider the Cauchy sequence. It is the architectural blueprint for completeness. Without it, the space of real numbers lacks the foundations necessary to support the skyscrapers of complex analysis. In our third year of undergraduate study, this realization acts as a "hard reset" on our previous understanding of mathematical continuity.
+                        </p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 py-8">
+<div class="border-2 border-black p-6 bg-slate-50">
+<h4 class="text-sm font-black uppercase mb-3">Lemma 4.2</h4>
+<p class="text-xs font-mono leading-normal">
+                                    "For every ε &gt; 0, there exists a δ &gt; 0 such that if 0 &lt; |x - c| &lt; δ, then |f(x) - L| &lt; ε."
+                                </p>
+<div class="mt-4 pt-4 border-t border-black border-dashed flex justify-between items-center">
+<span class="text-[10px] uppercase font-bold">Standard Notation</span>
+<span class="material-symbols-outlined text-sm">architecture</span>
+</div>
+</div>
+<div class="border-2 border-black p-6 bg-primary/10">
+<h4 class="text-sm font-black uppercase mb-3 text-primary">Interpretation</h4>
+<p class="text-xs font-mono leading-normal">
+                                    This is the tolerance specification of a mathematical joint. If the gap between input values is sufficiently small, the structural integrity of the output remains within safety margins.
+                                </p>
+</div>
+</div>
+<p>
+                            The transition from intuitive calculus to rigorous analysis is painful. It requires discarding the "hand-wavy" explanations of our youth in favor of a stark, brutalist reality. There is no room for ornamentation in a delta-epsilon proof. The beauty lies in the absolute lack of ambiguity.
+                        </p>
+<blockquote class="border-l-8 border-primary pl-8 py-4 my-12 italic text-2xl font-light text-slate-600">
+                            "To understand the calculus is to understand the invisible scaffold that holds our physical reality in place."
+                        </blockquote>
+<p>
+                            As students, we are the stewards of this logic. This blog serves as a repository for these structural observations. We invite others to peer into the blueprint with us, to challenge the load-bearing assumptions of modern education, and to build something more robust.
+                        </p>
+</div>
+<!-- Article Footer Actions -->
+<div class="pt-12 mt-12 border-t-4 border-black flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+<div class="flex gap-4">
+<button class="bg-primary text-white border-2 border-black px-6 py-3 font-bold brutalist-shadow-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all flex items-center gap-2">
+<span class="material-symbols-outlined">share</span> SHARE_ARTICLE
+                            </button>
+<button class="bg-white text-black border-2 border-black px-6 py-3 font-bold brutalist-shadow-sm hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all flex items-center gap-2">
+<span class="material-symbols-outlined">bookmark</span> SAVE_DATA
+                            </button>
+</div>
+<div class="flex items-center gap-4 text-xs font-black uppercase tracking-tighter">
+<span>Last Updated: 2023.10.24</span>
+<span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+<span>Live Status</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Sidebar: Right (Related/Next) -->
+<aside class="w-full md:w-64 border-t-4 md:border-t-0 md:border-l-4 border-black bg-slate-50 p-6">
+<div class="space-y-8">
+<h3 class="font-black uppercase text-sm border-b-2 border-black pb-2">Sequential Data</h3>
+<a class="group block p-4 bg-white border-2 border-black hover:bg-black hover:text-white transition-colors" href="#">
+<p class="text-[10px] font-black uppercase opacity-50 mb-1">Previous Entry</p>
+<h4 class="text-sm font-bold leading-tight">THE LIMITATIONS OF EUCLIDEAN GEOMETRY</h4>
+</a>
+<a class="group block p-4 bg-white border-2 border-black hover:bg-black hover:text-white transition-colors" href="#">
+<p class="text-[10px] font-black uppercase opacity-50 mb-1">Next Entry</p>
+<h4 class="text-sm font-bold leading-tight">TOPOLOGICAL MANIFOLDS IN VIRTUAL SPACES</h4>
+</a>
+<div class="pt-8">
+<h3 class="font-black uppercase text-sm border-b-2 border-black pb-2 mb-4">Laboratory Notes</h3>
+<div class="space-y-4">
+<div class="p-3 border-2 border-black border-dashed text-xs font-mono">
+                                [LOG_772]: Experimenting with LaTeX rendering on mobile viewports. Structural integrity is holding.
+                            </div>
+<div class="p-3 border-2 border-black border-dashed text-xs font-mono">
+                                [LOG_775]: Reading list for Exam 3 updated. See "Resources" tab in sidebar.
+                            </div>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<!-- Footer -->
+<footer class="bg-black text-white p-12">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+<div class="flex items-center gap-6">
+<div class="text-4xl font-black uppercase leading-none">
+                        Student<br/>Perspective
+                    </div>
+<div class="h-16 w-1 bg-primary"></div>
+<p class="max-w-xs text-xs font-mono opacity-60">
+                        An independent, student-run research and pedagogy blog exploring the intersection of advanced mathematics and structural logic. 
+                    </p>
+</div>
+<div class="flex flex-wrap justify-center gap-8 font-bold uppercase text-sm">
+<a class="hover:text-primary" href="#">Source Code</a>
+<a class="hover:text-primary" href="#">Style Guide</a>
+<a class="hover:text-primary" href="#">Privacy Policy</a>
+<a class="hover:text-primary" href="#">Contact Admin</a>
+</div>
+<button class="bg-primary p-4 border-2 border-white brutalist-shadow-sm hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+<span class="material-symbols-outlined block">arrow_upward</span>
+</button>
+</div>
+<div class="mt-12 text-center text-[10px] font-mono opacity-40 uppercase tracking-[0.3em]">
+                © 2023 STUDENT_PERSPECTIVE_GROUP. ALL_RIGHTS_RESERVED.
+            </div>
+</footer>
+</div>
+</body></html>

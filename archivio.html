@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="it" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Archivio Articoli - ScolaMia.it</title>
+  <meta name="description" content="Archivio completo degli articoli correnti e passati del blog scolastico." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { accent: "#0c7ff2", paper: "#f4f3ee", ink: "#101010" },
+          fontFamily: { display: ["Bebas Neue", "sans-serif"], body: ["IBM Plex Sans", "sans-serif"] },
+          boxShadow: { brutal: "4px 4px 0 0 #000" }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: "IBM Plex Sans", sans-serif; background: #f4f3ee; }
+    .headline { font-family: "Bebas Neue", sans-serif; letter-spacing: .04em; }
+  </style>
+</head>
+<body class="text-ink">
+  <header class="sticky top-0 z-50 bg-paper border-b-4 border-black">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between gap-4">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="border-2 border-black bg-accent p-1.5">
+          <span class="material-symbols-outlined text-white block">school</span>
+        </div>
+        <div>
+          <p class="headline text-3xl leading-none">ScolaMia.it</p>
+          <p class="text-xs font-semibold uppercase tracking-wider">Archivio</p>
+        </div>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-bold uppercase">
+        <a href="archivio.html" class="text-accent">Articoli</a>
+        <a href="agenda.html" class="hover:text-accent">Agenda</a>
+        <a href="contatti.html" class="hover:text-accent">Contatti</a>
+      </nav>
+      <a href="admin.html" class="border-2 border-black bg-black text-white px-4 py-2 text-xs font-bold uppercase shadow-brutal">Login Admin</a>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-8">
+    <section class="border-4 border-black bg-white p-6 shadow-brutal">
+      <h1 class="headline text-6xl">Archivio articoli</h1>
+      <p class="mt-2 text-sm">Consulta tutti gli articoli pubblicati, inclusi quelli passati.</p>
+      <form id="archiveSearchForm" class="mt-5 flex items-center border-2 border-black bg-paper max-w-xl">
+        <span class="material-symbols-outlined px-3">search</span>
+        <input id="archiveSearchInput" type="search" placeholder="Cerca per titolo, categoria o contenuto" class="w-full border-0 bg-transparent focus:ring-0" />
+      </form>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="headline text-5xl">Tutti gli articoli</h2>
+      <div id="allArticles" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "blogDeScuolaArticles";
+    const defaultArticles = [
+      { id: "seed-1", title: "Compiti settimanali - Classi seconde", category: "Compiti", excerpt: "Materiali e consegne per matematica, italiano e scienze.", content: "Pubblicazione di esempio.", published: true, createdAt: "2026-02-18T08:00:00.000Z", updatedAt: "2026-02-18T08:00:00.000Z" },
+      { id: "seed-2", title: "Open Day: programma completo", category: "Eventi", excerpt: "Orari, laboratori e visite guidate per nuovi iscritti.", content: "Pubblicazione di esempio.", published: true, createdAt: "2026-02-17T08:00:00.000Z", updatedAt: "2026-02-17T08:00:00.000Z" },
+      { id: "seed-3", title: "Giornale digitale degli studenti", category: "Progetti", excerpt: "Interviste, rubriche e lavori multimediali a cura della redazione.", content: "Pubblicazione di esempio.", published: true, createdAt: "2026-02-16T08:00:00.000Z", updatedAt: "2026-02-16T08:00:00.000Z" }
+    ];
+
+    function getArticles() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultArticles));
+        return [...defaultArticles];
+      }
+      try {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [...defaultArticles];
+      } catch {
+        return [...defaultArticles];
+      }
+    }
+
+    function filterArticles(articles, query) {
+      if (!query) return articles;
+      const text = query.toLowerCase();
+      return articles.filter((article) => {
+        const haystack = `${article.title} ${article.category} ${article.excerpt} ${article.content}`.toLowerCase();
+        return haystack.includes(text);
+      });
+    }
+
+    function card(article) {
+      return `
+        <article class="border-2 border-black bg-white p-4 shadow-brutal">
+          ${article.imageDataUrl ? `<div class="mb-3 border-2 border-black aspect-[16/9] overflow-hidden"><img src="${article.imageDataUrl}" alt="Immagine ${article.title}" class="w-full h-full object-cover" /></div>` : ""}
+          <p class="text-xs font-bold uppercase text-accent">${article.category}</p>
+          <h3 class="mt-2 text-lg font-semibold">${article.title}</h3>
+          <p class="mt-2 text-sm">${article.excerpt}</p>
+          <p class="mt-2 text-[11px] uppercase font-bold text-slate-500">Aggiornato: ${new Date(article.updatedAt).toLocaleDateString("it-IT")}</p>
+          <a href="article.html?id=${encodeURIComponent(article.id)}" class="inline-block mt-3 text-xs font-bold uppercase underline">Leggi</a>
+        </article>
+      `;
+    }
+
+    function render(query = "") {
+      const published = getArticles()
+        .filter((article) => article.published)
+        .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+      const filtered = filterArticles(published, query.trim());
+      const allEl = document.getElementById("allArticles");
+      allEl.innerHTML = filtered.length ? filtered.map(card).join("") : '<div class="md:col-span-3 border-2 border-black bg-white p-4">Nessun articolo trovato per questa ricerca.</div>';
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const initialQuery = params.get("q") || "";
+    const searchInput = document.getElementById("archiveSearchInput");
+    searchInput.value = initialQuery;
+
+    document.getElementById("archiveSearchForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const query = searchInput.value.trim();
+      const url = query ? `archivio.html?q=${encodeURIComponent(query)}` : "archivio.html";
+      history.replaceState(null, "", url);
+      render(query);
+    });
+
+    searchInput.addEventListener("input", () => render(searchInput.value));
+    render(initialQuery);
+  </script>
+</body>
+</html>

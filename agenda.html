@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="it" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agenda - ScolaMia.it</title>
+  <meta name="description" content="Agenda scolastica completa con eventi e appuntamenti." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { accent: "#0c7ff2", paper: "#f4f3ee", ink: "#101010" },
+          fontFamily: { display: ["Bebas Neue", "sans-serif"], body: ["IBM Plex Sans", "sans-serif"] },
+          boxShadow: { brutal: "4px 4px 0 0 #000" }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: "IBM Plex Sans", sans-serif; background: #f4f3ee; }
+    .headline { font-family: "Bebas Neue", sans-serif; letter-spacing: .04em; }
+  </style>
+</head>
+<body class="text-ink">
+  <header class="sticky top-0 z-50 bg-paper border-b-4 border-black">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between gap-4">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="border-2 border-black bg-accent p-1.5">
+          <span class="material-symbols-outlined text-white block">school</span>
+        </div>
+        <div>
+          <p class="headline text-3xl leading-none">ScolaMia.it</p>
+          <p class="text-xs font-semibold uppercase tracking-wider">Agenda</p>
+        </div>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-bold uppercase">
+        <a href="archivio.html" class="hover:text-accent">Articoli</a>
+        <a href="agenda.html" class="text-accent">Agenda</a>
+        <a href="contatti.html" class="hover:text-accent">Contatti</a>
+      </nav>
+      <a href="admin.html" class="border-2 border-black bg-black text-white px-4 py-2 text-xs font-bold uppercase shadow-brutal">Login Admin</a>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-8">
+    <section class="border-4 border-black bg-white p-6 shadow-brutal">
+      <h1 class="headline text-6xl">Agenda scolastica</h1>
+      <p class="mt-2 text-sm">Tutti gli appuntamenti del periodo scolastico.</p>
+      <form id="agendaSearchForm" class="mt-5 flex items-center border-2 border-black bg-paper max-w-xl">
+        <span class="material-symbols-outlined px-3">search</span>
+        <input id="agendaSearchInput" type="search" placeholder="Cerca evento, data o categoria" class="w-full border-0 bg-transparent focus:ring-0" />
+      </form>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="headline text-5xl">Tutti gli eventi</h2>
+      <div id="agendaList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+  </main>
+
+  <script>
+    const AGENDA_STORAGE_KEY = "blogDeScuolaAgendaEvents";
+    const defaultEvents = [
+      { id: "evt-1", date: "2026-03-03", title: "Consigli di classe", category: "Didattica", description: "Riunione coordinatori e docenti per andamento classi." },
+      { id: "evt-2", date: "2026-03-08", title: "Mostra dei progetti artistici", category: "Progetti", description: "Esposizione lavori creativi degli studenti." },
+      { id: "evt-3", date: "2026-03-14", title: "Giochi matematici d'istituto", category: "Competizioni", description: "Sfida interna di logica e matematica." },
+      { id: "evt-4", date: "2026-03-20", title: "Assemblea studenti", category: "Istituto", description: "Aggiornamenti rappresentanti e proposte studentesche." },
+      { id: "evt-5", date: "2026-03-26", title: "Incontro orientamento", category: "Orientamento", description: "Presentazione percorsi di studio post-diploma." },
+      { id: "evt-6", date: "2026-04-05", title: "Open Lab Scienze", category: "Laboratori", description: "Sessione aperta con esperimenti guidati." }
+    ];
+
+    function getEvents() {
+      const raw = localStorage.getItem(AGENDA_STORAGE_KEY);
+      if (!raw) {
+        localStorage.setItem(AGENDA_STORAGE_KEY, JSON.stringify(defaultEvents));
+        return [...defaultEvents];
+      }
+      try {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [...defaultEvents];
+      } catch {
+        return [...defaultEvents];
+      }
+    }
+
+    function formatDate(iso) {
+      return new Date(iso).toLocaleDateString("it-IT", { day: "2-digit", month: "long", year: "numeric" });
+    }
+
+    function filterEvents(list, query) {
+      if (!query) return list;
+      const q = query.toLowerCase();
+      return list.filter((event) => `${event.date} ${event.title} ${event.category} ${event.description}`.toLowerCase().includes(q));
+    }
+
+    function render(query = "") {
+      const events = getEvents().sort((a, b) => new Date(a.date) - new Date(b.date));
+      const filtered = filterEvents(events, query.trim());
+      const el = document.getElementById("agendaList");
+
+      el.innerHTML = filtered.length
+        ? filtered.map((event) => `
+            <article class="border-2 border-black bg-white p-4 shadow-brutal">
+              <p class="text-xs uppercase font-bold text-accent">${event.category}</p>
+              <h3 class="mt-2 text-lg font-semibold">${event.title}</h3>
+              <p class="mt-2 text-sm">${event.description}</p>
+              <p class="mt-3 text-[11px] uppercase font-bold text-slate-500">${formatDate(event.date)}</p>
+            </article>
+          `).join("")
+        : '<div class="md:col-span-3 border-2 border-black bg-white p-4">Nessun evento trovato per questa ricerca.</div>';
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const initialQuery = params.get("q") || "";
+    const searchInput = document.getElementById("agendaSearchInput");
+    searchInput.value = initialQuery;
+
+    document.getElementById("agendaSearchForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const query = searchInput.value.trim();
+      const url = query ? `agenda.html?q=${encodeURIComponent(query)}` : "agenda.html";
+      history.replaceState(null, "", url);
+      render(query);
+    });
+
+    searchInput.addEventListener("input", () => render(searchInput.value));
+    render(initialQuery);
+  </script>
+</body>
+</html>
