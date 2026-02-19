@@ -1,7 +1,9 @@
-import { getFeaturedArticleIds, getPublishedArticles } from "./public-api.js";
+import { getAgendaEvents, getFeaturedArticleIds, getPublishedArticles } from "./public-api.js";
+import { formatLocalDate } from "./supabase-client.js";
 
 const grid = document.getElementById("articlesGrid");
 const featured = document.getElementById("featuredArticles");
+const homeAgendaGrid = document.getElementById("homeAgendaGrid");
 
 function articleCard(article) {
   return `
@@ -25,9 +27,30 @@ function featuredCard(article, index) {
   `;
 }
 
+function agendaCard(item) {
+  const dateLabel = formatLocalDate(item.date) || "Data da definire";
+  return `
+    <article class="border-2 border-white p-4">
+      <p class="text-xs uppercase font-bold opacity-80">${item.category}</p>
+      <h3 class="mt-1 font-semibold">${item.title}</h3>
+      <p class="mt-2 text-xs uppercase font-bold">${dateLabel}</p>
+      <a class="inline-block mt-3 text-[11px] font-bold uppercase underline" href="agenda.html">Apri agenda</a>
+    </article>
+  `;
+}
+
+function normalizeDateValue(value) {
+  if (!value) return Number.POSITIVE_INFINITY;
+  const raw = String(value).trim();
+  const normalized = /^\d{4}-\d{2}-\d{2}$/.test(raw) ? raw : (raw.match(/^(\d{4}-\d{2}-\d{2})T/)?.[1] || "");
+  if (!normalized) return Number.POSITIVE_INFINITY;
+  const time = new Date(`${normalized}T00:00:00`).getTime();
+  return Number.isNaN(time) ? Number.POSITIVE_INFINITY : time;
+}
+
 async function renderHome() {
   try {
-    const published = await getPublishedArticles();
+    const [published, agendaEvents] = await Promise.all([getPublishedArticles(), getAgendaEvents()]);
     const top = published.slice(0, 3);
 
     if (!top.length) {
@@ -45,10 +68,19 @@ async function renderHome() {
     ).slice(0, 3);
 
     featured.innerHTML = featuredArticles.map(featuredCard).join("");
+
+    const upcoming = [...agendaEvents]
+      .sort((a, b) => normalizeDateValue(a.date) - normalizeDateValue(b.date))
+      .slice(0, 3);
+
+    homeAgendaGrid.innerHTML = upcoming.length
+      ? upcoming.map(agendaCard).join("")
+      : '<div class="md:col-span-3 border-2 border-white p-4">Nessun evento agenda disponibile.</div>';
   } catch (error) {
     console.error(error);
     grid.innerHTML = '<div class="md:col-span-3 border-2 border-black bg-white p-5 shadow-brutal">Errore caricamento articoli.</div>';
     featured.innerHTML = '<div class="border-2 border-white/60 p-4">Errore caricamento evidenza.</div>';
+    homeAgendaGrid.innerHTML = '<div class="md:col-span-3 border-2 border-white p-4">Errore caricamento agenda.</div>';
   }
 }
 

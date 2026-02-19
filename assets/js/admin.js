@@ -43,6 +43,27 @@ let currentArticleImagePath = "";
 let currentArticleImageFile = null;
 let currentArticleAttachments = [];
 
+function normalizeAgendaDateInput(value) {
+  if (!value) return "";
+  const raw = String(value).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+
+  const iso = raw.match(/^(\d{4}-\d{2}-\d{2})T/);
+  if (iso) return iso[1];
+
+  const dmy = raw.match(/^(\d{2})[/-](\d{2})[/-](\d{4})$/);
+  if (dmy) return `${dmy[3]}-${dmy[2]}-${dmy[1]}`;
+
+  return "";
+}
+
+function agendaSortValue(value) {
+  const normalized = normalizeAgendaDateInput(value);
+  if (!normalized) return Number.POSITIVE_INFINITY;
+  const time = new Date(`${normalized}T00:00:00`).getTime();
+  return Number.isNaN(time) ? Number.POSITIVE_INFINITY : time;
+}
+
 function setContentSection(section) {
   const showArticles = section === "articles";
   currentSection = section;
@@ -90,7 +111,7 @@ async function loadData() {
     supabase
       .from("agenda_events")
       .select("id,title,category,date,description,created_at,updated_at")
-      .order("date", { ascending: true }),
+      .order("updated_at", { ascending: false }),
     requireSettingsRow()
   ]);
 
@@ -98,7 +119,7 @@ async function loadData() {
   if (eventError) throw eventError;
 
   articles = articleData || [];
-  events = eventData || [];
+  events = (eventData || []).sort((a, b) => agendaSortValue(a.date) - agendaSortValue(b.date));
   featuredIds = Array.isArray(settings.featured_article_ids) ? settings.featured_article_ids : [];
   sanitizeFeaturedIds();
 }
@@ -298,7 +319,7 @@ function fillAgendaForm(item) {
   document.getElementById("agendaEventId").value = item.id;
   document.getElementById("agendaTitle").value = item.title;
   document.getElementById("agendaCategory").value = item.category;
-  document.getElementById("agendaDate").value = item.date;
+  document.getElementById("agendaDate").value = normalizeAgendaDateInput(item.date);
   document.getElementById("agendaDescription").value = item.description;
   document.getElementById("submitAgendaBtn").textContent = "Aggiorna Evento";
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -317,7 +338,7 @@ function renderAdminAgendaEvents() {
           <p class="text-xs uppercase font-bold text-accent">${escapeHtml(item.category)}</p>
           <h4 class="text-lg font-semibold">${escapeHtml(item.title)}</h4>
           <p class="text-sm mt-1">${escapeHtml(item.description)}</p>
-          <p class="text-xs mt-2">Data: ${formatLocalDate(item.date)}</p>
+          <p class="text-xs mt-2">Data: ${formatLocalDate(normalizeAgendaDateInput(item.date)) || "Data non valida"}</p>
         </div>
         <div class="flex flex-wrap gap-2 md:justify-end">
           <button data-agenda-action="edit" data-id="${item.id}" class="border-2 border-black px-3 py-1 text-xs font-bold uppercase">Modifica</button>

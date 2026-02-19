@@ -9,6 +9,17 @@ const searchInput = document.getElementById("searchInput");
 let articles = [];
 let events = [];
 
+function normalizeAgendaDateInput(value) {
+  if (!value) return "";
+  const raw = String(value).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+  const iso = raw.match(/^(\d{4}-\d{2}-\d{2})T/);
+  if (iso) return iso[1];
+  const dmy = raw.match(/^(\d{2})[/-](\d{2})[/-](\d{4})$/);
+  if (dmy) return `${dmy[3]}-${dmy[2]}-${dmy[1]}`;
+  return raw;
+}
+
 function render(query = "") {
   const q = query.trim();
 
@@ -42,7 +53,7 @@ function render(query = "") {
           <p class="text-xs font-bold uppercase text-accent">${item.category}</p>
           <h3 class="mt-2 text-lg font-semibold">${item.title}</h3>
           <p class="mt-2 text-sm">${item.description}</p>
-          <p class="mt-2 text-[11px] uppercase font-bold text-slate-500">${formatLocalDate(item.date)}</p>
+          <p class="mt-2 text-[11px] uppercase font-bold text-slate-500">${formatLocalDate(normalizeAgendaDateInput(item.date)) || "Data non valida"}</p>
           <a href="agenda.html" class="inline-block mt-3 text-xs font-bold uppercase underline">Vai agenda</a>
         </article>
       `).join("")
