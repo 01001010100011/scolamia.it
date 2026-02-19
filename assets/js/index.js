@@ -38,8 +38,8 @@ function featuredCard(article, index) {
   return `
     <a href="article.html?id=${encodeURIComponent(article.id)}" class="stagger block border-2 border-white/60 p-4 hover:bg-white hover:text-black transition-colors" style="animation-delay:${index * 0.1}s">
       ${article.image_url ? `<div class="mb-2 border border-white/60 aspect-[16/9] overflow-hidden"><img src="${article.image_url}" alt="Immagine ${article.title}" class="w-full h-full object-cover" /></div>` : ""}
-      <p class="text-xs uppercase opacity-70">${article.category}</p>
-      <h3 class="font-semibold mt-1">${article.title}</h3>
+      <p class="text-sm font-semibold uppercase tracking-wide opacity-90">${article.category}</p>
+      <h3 class="text-lg font-bold mt-1">${article.title}</h3>
     </a>
   `;
 }
