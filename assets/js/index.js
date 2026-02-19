@@ -4,6 +4,8 @@ import { formatLocalDate } from "./supabase-client.js";
 const grid = document.getElementById("articlesGrid");
 const featured = document.getElementById("featuredArticles");
 const homeAgendaGrid = document.getElementById("homeAgendaGrid");
+const presentationArticleBtn = document.getElementById("presentationArticleBtn");
+const PRESENTATION_ARTICLE_ID = "9d056b37-cacf-4c49-879e-d312fb4ef31f";
 
 function shortDate(value) {
   const date = new Date(value);
@@ -72,6 +74,10 @@ async function renderHome() {
 
   const published = articlesRes.status === "fulfilled" ? articlesRes.value : [];
   const top = published.slice(0, 3);
+  const presentationArticle = published.find((article) => article.id === PRESENTATION_ARTICLE_ID || article.title.trim().toLowerCase() === "presentazione sito");
+  if (presentationArticleBtn && presentationArticle) {
+    presentationArticleBtn.href = `article.html?id=${encodeURIComponent(presentationArticle.id)}`;
+  }
 
   if (articlesRes.status === "rejected") {
     console.error(articlesRes.reason);
