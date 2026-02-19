@@ -70,35 +70,41 @@ alter table public.agenda_events enable row level security;
 alter table public.site_settings enable row level security;
 
 -- Public can read published content
-create policy if not exists "public read published articles"
+drop policy if exists "public read published articles" on public.articles;
+create policy "public read published articles"
 on public.articles
 for select
 using (published = true);
 
-create policy if not exists "public read agenda"
+drop policy if exists "public read agenda" on public.agenda_events;
+create policy "public read agenda"
 on public.agenda_events
 for select
 using (true);
 
-create policy if not exists "public read settings"
+drop policy if exists "public read settings" on public.site_settings;
+create policy "public read settings"
 on public.site_settings
 for select
 using (true);
 
 -- Authenticated users (admins) can manage all content
-create policy if not exists "auth manage articles"
+drop policy if exists "auth manage articles" on public.articles;
+create policy "auth manage articles"
 on public.articles
 for all
 using (auth.role() = 'authenticated')
 with check (auth.role() = 'authenticated');
 
-create policy if not exists "auth manage agenda"
+drop policy if exists "auth manage agenda" on public.agenda_events;
+create policy "auth manage agenda"
 on public.agenda_events
 for all
 using (auth.role() = 'authenticated')
 with check (auth.role() = 'authenticated');
 
-create policy if not exists "auth manage settings"
+drop policy if exists "auth manage settings" on public.site_settings;
+create policy "auth manage settings"
 on public.site_settings
 for all
 using (auth.role() = 'authenticated')
@@ -110,24 +116,28 @@ values ('article-media', 'article-media', true)
 on conflict (id) do nothing;
 
 -- Public read storage
-create policy if not exists "public read article media"
+drop policy if exists "public read article media" on storage.objects;
+create policy "public read article media"
 on storage.objects
 for select
 using (bucket_id = 'article-media');
 
 -- Authenticated manage storage
-create policy if not exists "auth upload article media"
+drop policy if exists "auth upload article media" on storage.objects;
+create policy "auth upload article media"
 on storage.objects
 for insert
 with check (bucket_id = 'article-media' and auth.role() = 'authenticated');
 
-create policy if not exists "auth update article media"
+drop policy if exists "auth update article media" on storage.objects;
+create policy "auth update article media"
 on storage.objects
 for update
 using (bucket_id = 'article-media' and auth.role() = 'authenticated')
 with check (bucket_id = 'article-media' and auth.role() = 'authenticated');
 
-create policy if not exists "auth delete article media"
+drop policy if exists "auth delete article media" on storage.objects;
+create policy "auth delete article media"
 on storage.objects
 for delete
 using (bucket_id = 'article-media' and auth.role() = 'authenticated');
