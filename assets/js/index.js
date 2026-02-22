@@ -1,11 +1,18 @@
-import { getAgendaEvents, getFeaturedArticleIds, getPublishedArticles } from "./public-api.js";
+import { getAgendaEvents, getCountdownEvents, getFeaturedArticleIds, getPublishedArticles } from "./public-api.js";
+import { FEATURED_COUNTDOWN_SLUG, FALLBACK_COUNTDOWN_EVENTS, onlyFutureEvents } from "./countdown-data.js";
+import { formatCountdown, formatTargetDate } from "./countdown-core.js";
 import { formatLocalDate } from "./supabase-client.js";
 
 const grid = document.getElementById("articlesGrid");
 const featured = document.getElementById("featuredArticles");
 const homeAgendaGrid = document.getElementById("homeAgendaGrid");
+const homeCountdownFeatured = document.getElementById("homeCountdownFeatured");
+const homeCountdownList = document.getElementById("homeCountdownList");
 const presentationArticleBtn = document.getElementById("presentationArticleBtn");
 const PRESENTATION_ARTICLE_ID = "9d056b37-cacf-4c49-879e-d312fb4ef31f";
+
+let homeCountdownEvents = [];
+let homeCountdownTicker = null;
 
 function shortDate(value) {
   const date = new Date(value);
@@ -56,6 +63,87 @@ function agendaCard(item) {
   `;
 }
 
+function sortByTargetDate(events) {
+  return [...events].sort((a, b) => new Date(a.target_at).getTime() - new Date(b.target_at).getTime());
+}
+
+function countdownHomeFeaturedCard(event) {
+  return `
+    <a href="countdown-detail.html?id=${encodeURIComponent(event.slug)}" class="block border-4 border-black bg-black text-white p-6 md:p-8 shadow-brutal lift transition-all h-full">
+      <p class="text-xs uppercase font-bold tracking-wide opacity-80">Countdown principale</p>
+      <h3 class="headline text-6xl mt-2">${event.title}</h3>
+      <p data-home-countdown-value="${event.slug}" class="mt-4 text-2xl font-bold">${formatCountdown(event.target_at)}</p>
+      <p class="mt-2 text-xs uppercase font-bold opacity-80">${formatTargetDate(event.target_at)}</p>
+    </a>
+  `;
+}
+
+function countdownHomeCard(event) {
+  return `
+    <a href="countdown-detail.html?id=${encodeURIComponent(event.slug)}" class="block border-2 border-black bg-white p-4 shadow-brutal lift transition-all">
+      <h3 class="headline text-4xl mt-1">${event.title}</h3>
+      <p data-home-countdown-value="${event.slug}" class="mt-3 text-lg font-bold">${formatCountdown(event.target_at)}</p>
+      <p class="mt-2 text-xs uppercase font-semibold text-slate-500">${formatTargetDate(event.target_at)}</p>
+    </a>
+  `;
+}
+
+function selectHomeCountdowns(events) {
+  const futureSorted = sortByTargetDate(onlyFutureEvents(events));
+  if (!futureSorted.length) return { featured: null, next: [] };
+
+  const featured = futureSorted.find((item) => item.slug === FEATURED_COUNTDOWN_SLUG || item.featured) || futureSorted[0];
+  const next = futureSorted
+    .filter((item) => item.slug !== featured.slug)
+    .slice(0, 2);
+
+  return { featured, next };
+}
+
+function updateHomeCountdownValues() {
+  homeCountdownEvents = onlyFutureEvents(homeCountdownEvents);
+
+  homeCountdownEvents.forEach((event) => {
+    const node = document.querySelector(`[data-home-countdown-value="${event.slug}"]`);
+    if (node) node.textContent = formatCountdown(event.target_at);
+  });
+}
+
+function mountHomeCountdownTicker() {
+  if (homeCountdownTicker) {
+    clearInterval(homeCountdownTicker);
+    homeCountdownTicker = null;
+  }
+
+  homeCountdownTicker = setInterval(() => {
+    if (!homeCountdownEvents.length) {
+      clearInterval(homeCountdownTicker);
+      homeCountdownTicker = null;
+      return;
+    }
+    updateHomeCountdownValues();
+  }, 60000);
+}
+
+function renderHomeCountdownSection(events) {
+  const { featured: featuredEvent, next } = selectHomeCountdowns(events);
+  homeCountdownEvents = featuredEvent ? [featuredEvent, ...next] : [];
+
+  if (!featuredEvent) {
+    homeCountdownFeatured.innerHTML = '<div class="border-2 border-black bg-white p-5 shadow-brutal">Nessun countdown futuro disponibile.</div>';
+    homeCountdownList.innerHTML = "";
+    return;
+  }
+
+  homeCountdownFeatured.innerHTML = countdownHomeFeaturedCard(featuredEvent);
+
+  homeCountdownList.innerHTML = next.length
+    ? next.map((event) => countdownHomeCard(event)).join("")
+    : '<div class="border-2 border-black bg-white p-4 shadow-brutal">Nessun altro countdown disponibile.</div>';
+
+  mountHomeCountdownTicker();
+}
+
 function normalizeDateValue(value) {
   if (!value) return Number.POSITIVE_INFINITY;
   const raw = String(value).trim();
@@ -66,10 +154,11 @@ function normalizeDateValue(value) {
 }
 
 async function renderHome() {
-  const [articlesRes, agendaRes, featuredRes] = await Promise.allSettled([
+  const [articlesRes, agendaRes, featuredRes, countdownRes] = await Promise.allSettled([
     getPublishedArticles(),
     getAgendaEvents(),
-    getFeaturedArticleIds()
+    getFeaturedArticleIds(),
+    getCountdownEvents()
   ]);
 
   const published = articlesRes.status === "fulfilled" ? articlesRes.value : [];
@@ -101,6 +190,12 @@ async function renderHome() {
       ? featuredArticles.map(featuredCard).join("")
       : '<div class="border-2 border-white/60 p-4">Nessun contenuto in evidenza.</div>';
   }
+
+  const countdownEvents = countdownRes.status === "fulfilled" ? countdownRes.value : FALLBACK_COUNTDOWN_EVENTS;
+  if (countdownRes.status === "rejected") {
+    console.error(countdownRes.reason);
+  }
+  renderHomeCountdownSection(countdownEvents);
 
   if (agendaRes.status === "rejected") {
     console.error(agendaRes.reason);

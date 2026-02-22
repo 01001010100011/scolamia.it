@@ -1,13 +1,25 @@
-import { CONTACTS, dateTokens, getAgendaEvents, getPublishedArticles, queryMatches } from "./public-api.js";
+import {
+  CONTACTS,
+  countdownDateTokens,
+  dateTokens,
+  getAgendaEvents,
+  getCountdownEvents,
+  getPublishedArticles,
+  queryMatches
+} from "./public-api.js";
+import { FALLBACK_COUNTDOWN_EVENTS, onlyFutureEvents } from "./countdown-data.js";
+import { formatTargetDate } from "./countdown-core.js";
 import { formatLocalDate } from "./supabase-client.js";
 
 const articleResultsEl = document.getElementById("articleResults");
 const agendaResultsEl = document.getElementById("agendaResults");
+const countdownResultsEl = document.getElementById("countdownResults");
 const contactResultsEl = document.getElementById("contactResults");
 const searchInput = document.getElementById("searchInput");
 
 let articles = [];
 let events = [];
+let countdowns = [];
 
 function normalizeAgendaDateInput(value) {
   if (!value) return "";
@@ -29,6 +41,10 @@ function render(query = "") {
 
   const agendaResults = events.filter((item) =>
     !q || queryMatches(`${item.title} ${item.category} ${item.description} ${dateTokens(item.date)}`, q)
+  );
+
+  const countdownResults = countdowns.filter((item) =>
+    !q || queryMatches(`${item.title} ${countdownDateTokens(item.target_at)}`, q)
   );
 
   const contactResults = CONTACTS.filter((item) =>
@@ -59,6 +75,17 @@ function render(query = "") {
       `).join("")
     : '<div class="md:col-span-3 border-2 border-black bg-white p-4">Nessun evento trovato.</div>';
 
+  countdownResultsEl.innerHTML = countdownResults.length
+    ? countdownResults.map((item) => `
+        <article class="border-2 border-black bg-white p-4 shadow-brutal">
+          <p class="text-xs font-bold uppercase text-accent">Countdown</p>
+          <h3 class="mt-2 text-lg font-semibold">${item.title}</h3>
+          <p class="mt-2 text-[11px] uppercase font-bold text-slate-500">${formatTargetDate(item.target_at)}</p>
+          <a href="countdown-detail.html?id=${encodeURIComponent(item.slug)}" class="inline-block mt-3 text-xs font-bold uppercase underline">Apri dettaglio</a>
+        </article>
+      `).join("")
+    : '<div class="md:col-span-3 border-2 border-black bg-white p-4">Nessun countdown trovato.</div>';
+
   contactResultsEl.innerHTML = contactResults.length
     ? contactResults.map((item) => `
         <article class="border-2 border-black bg-white p-4 shadow-brutal">
@@ -70,15 +97,19 @@ function render(query = "") {
 }
 
 async function bootstrap() {
-  try {
-    [articles, events] = await Promise.all([getPublishedArticles(), getAgendaEvents()]);
-  } catch (error) {
-    console.error(error);
-    articleResultsEl.innerHTML = '<div class="md:col-span-3 border-2 border-black bg-white p-4">Errore caricamento ricerca.</div>';
-    agendaResultsEl.innerHTML = '<div class="md:col-span-3 border-2 border-black bg-white p-4">Errore caricamento ricerca.</div>';
-    contactResultsEl.innerHTML = '<div class="md:col-span-3 border-2 border-black bg-white p-4">Errore caricamento ricerca.</div>';
-    return;
-  }
+  const [articlesRes, eventsRes, countdownRes] = await Promise.allSettled([
+    getPublishedArticles(),
+    getAgendaEvents(),
+    getCountdownEvents()
+  ]);
+
+  articles = articlesRes.status === "fulfilled" ? articlesRes.value : [];
+  events = eventsRes.status === "fulfilled" ? eventsRes.value : [];
+  countdowns = countdownRes.status === "fulfilled" ? countdownRes.value : onlyFutureEvents(FALLBACK_COUNTDOWN_EVENTS);
+
+  if (articlesRes.status === "rejected") console.error(articlesRes.reason);
+  if (eventsRes.status === "rejected") console.error(eventsRes.reason);
+  if (countdownRes.status === "rejected") console.error(countdownRes.reason);
 
   const params = new URLSearchParams(window.location.search);
   const initialQuery = params.get("q") || "";

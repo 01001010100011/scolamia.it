@@ -84,8 +84,53 @@ export async function getCountdownEventBySlug(slug) {
   return data || null;
 }
 
+export function normalizeSearchText(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function countdownDateTokens(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const longParts = new Intl.DateTimeFormat("it-IT", {
+    timeZone: "Europe/Rome",
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  }).formatToParts(date);
+
+  const numericParts = new Intl.DateTimeFormat("it-IT", {
+    timeZone: "Europe/Rome",
+    day: "numeric",
+    month: "numeric",
+    year: "numeric"
+  }).formatToParts(date);
+
+  const day = longParts.find((part) => part.type === "day")?.value || "";
+  const monthLong = longParts.find((part) => part.type === "month")?.value || "";
+  const year = longParts.find((part) => part.type === "year")?.value || "";
+  const monthNum = numericParts.find((part) => part.type === "month")?.value || "";
+
+  const dd = day.padStart(2, "0");
+  const mm = monthNum.padStart(2, "0");
+
+  return [
+    `${dd}/${mm}/${year}`,
+    `${day}/${monthNum}/${year}`,
+    `${day} ${monthLong} ${year}`,
+    `${day} ${monthLong}`
+  ].join(" ");
+}
+
 export function queryMatches(text, query) {
-  return text.toLowerCase().includes(query.toLowerCase());
+  const normalizedQuery = normalizeSearchText(query);
+  if (!normalizedQuery) return true;
+  return normalizeSearchText(text).includes(normalizedQuery);
 }
 
 export function dateTokens(value) {

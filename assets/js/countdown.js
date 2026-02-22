@@ -1,13 +1,27 @@
-import { getCountdownEvents } from "./public-api.js";
+import { countdownDateTokens, getCountdownEvents, queryMatches } from "./public-api.js";
 import { FEATURED_COUNTDOWN_SLUG, FALLBACK_COUNTDOWN_EVENTS, onlyFutureEvents, sortCountdownEvents } from "./countdown-data.js";
 import { formatCountdown, formatTargetDate } from "./countdown-core.js";
 
 const featuredEl = document.getElementById("featuredCountdown");
 const listEl = document.getElementById("countdownList");
 const statusEl = document.getElementById("countdownStatus");
+const searchInput = document.getElementById("countdownSearchInput");
+const searchForm = document.getElementById("countdownSearchForm");
 
-let currentEvents = [];
+let allEvents = [];
+let visibleEvents = [];
+let activeQuery = "";
 let timer = null;
+
+function eventSearchSource(event) {
+  return `${event.title} ${countdownDateTokens(event.target_at)}`;
+}
+
+function filterEvents(events, query) {
+  const q = String(query || "").trim();
+  if (!q) return events;
+  return events.filter((event) => queryMatches(eventSearchSource(event), q));
+}
 
 function renderCard(event, isFeatured = false) {
   return `
@@ -19,8 +33,37 @@ function renderCard(event, isFeatured = false) {
   `;
 }
 
+function renderState() {
+  const futureSorted = sortCountdownEvents(onlyFutureEvents(allEvents));
+  const filtered = filterEvents(futureSorted, activeQuery);
+  visibleEvents = filtered;
+
+  if (!filtered.length) {
+    featuredEl.innerHTML = "";
+    listEl.innerHTML = '<div class="border-2 border-black bg-white p-4">Nessun countdown trovato con i filtri correnti.</div>';
+    if (statusEl) {
+      statusEl.textContent = "Mostrati solo eventi futuri (fuso Europe/Rome).";
+      statusEl.classList.remove("hidden");
+    }
+    return;
+  }
+
+  const featured = filtered.find((event) => event.slug === FEATURED_COUNTDOWN_SLUG || event.featured) || filtered[0];
+  const others = filtered.filter((event) => event.slug !== featured.slug);
+
+  featuredEl.innerHTML = renderCard(featured, true);
+  listEl.innerHTML = others.length
+    ? others.map((event) => renderCard(event)).join("")
+    : '<div class="border-2 border-black bg-white p-4">Nessun altro countdown futuro.</div>';
+
+  if (statusEl) {
+    statusEl.textContent = "Mostrati solo eventi futuri (fuso Europe/Rome).";
+    statusEl.classList.remove("hidden");
+  }
+}
+
 function updateCountdownValues() {
-  currentEvents.forEach((event) => {
+  visibleEvents.forEach((event) => {
     const node = document.querySelector(`[data-countdown-value="${event.slug}"]`);
     if (node) node.textContent = formatCountdown(event.target_at);
   });
@@ -28,17 +71,21 @@ function updateCountdownValues() {
 
 function mountTicker() {
   if (timer) clearInterval(timer);
+
   timer = setInterval(() => {
-    currentEvents = onlyFutureEvents(currentEvents);
-    if (!currentEvents.length) {
-      if (featuredEl) featuredEl.innerHTML = "";
-      if (listEl) listEl.innerHTML = '<div class="border-2 border-black bg-white p-4">Nessun countdown futuro disponibile.</div>';
+    allEvents = onlyFutureEvents(allEvents);
+    if (!allEvents.length) {
+      featuredEl.innerHTML = "";
+      listEl.innerHTML = '<div class="border-2 border-black bg-white p-4">Nessun countdown futuro disponibile.</div>';
       if (statusEl) statusEl.classList.add("hidden");
       clearInterval(timer);
+      timer = null;
       return;
     }
+
     updateCountdownValues();
-  }, 1000);
+    renderState();
+  }, 60000);
 }
 
 async function loadEvents() {
@@ -52,29 +99,27 @@ async function loadEvents() {
 }
 
 async function bootstrap() {
-  const loaded = await loadEvents();
-  const future = sortCountdownEvents(onlyFutureEvents(loaded));
-  currentEvents = future;
+  allEvents = await loadEvents();
+  allEvents = onlyFutureEvents(allEvents);
 
-  if (!future.length) {
+  if (!allEvents.length) {
     featuredEl.innerHTML = "";
     listEl.innerHTML = '<div class="border-2 border-black bg-white p-4">Nessun countdown futuro disponibile.</div>';
     return;
   }
 
-  const featured = future.find((event) => event.slug === FEATURED_COUNTDOWN_SLUG || event.featured) || future[0];
-  const others = future.filter((event) => event.slug !== featured.slug);
-
-  featuredEl.innerHTML = renderCard(featured, true);
-  listEl.innerHTML = others.length
-    ? others.map((event) => renderCard(event)).join("")
-    : '<div class="border-2 border-black bg-white p-4">Nessun altro countdown futuro.</div>';
-
-  if (statusEl) {
-    statusEl.textContent = "Mostrati solo eventi futuri (fuso Europe/Rome).";
-    statusEl.classList.remove("hidden");
+  if (searchForm) {
+    searchForm.addEventListener("submit", (event) => event.preventDefault());
   }
 
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      activeQuery = searchInput.value.trim();
+      renderState();
+    });
+  }
+
+  renderState();
   mountTicker();
 }
 

@@ -22,7 +22,7 @@ export function getRemainingParts(targetAt) {
 export function formatCountdown(targetAt) {
   const parts = getRemainingParts(targetAt);
   if (!parts) return "Evento concluso";
-  return `${parts.days} giorni ${String(parts.hours).padStart(2, "0")}:${String(parts.minutes).padStart(2, "0")}:${String(parts.seconds).padStart(2, "0")}`;
+  return `${parts.days} giorni ${parts.hours} ore ${parts.minutes} minuti`;
 }
 
 export function formatTargetDate(targetAt) {
