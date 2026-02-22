@@ -59,6 +59,24 @@ export async function getAgendaEvents() {
 export async function getCountdownEvents() {
   const nowIso = new Date().toISOString();
   const { data, error } = await supabase
+    .from("countdowns")
+    .select("id,slug,title,target_at,is_featured,active")
+    .eq("active", true)
+    .gte("target_at", nowIso)
+    .order("is_featured", { ascending: false })
+    .order("target_at", { ascending: true });
+
+  if (!error) {
+    return (data || []).map((item) => ({
+      ...item,
+      slug: item.slug || item.id,
+      featured: Boolean(item.is_featured)
+    }));
+  }
+
+  if (!["42P01", "42703"].includes(error.code || "")) throw error;
+
+  const { data: legacyData, error: legacyError } = await supabase
     .from("school_events")
     .select("slug,title,target_at,featured,active")
     .eq("active", true)
@@ -66,11 +84,46 @@ export async function getCountdownEvents() {
     .gte("target_at", nowIso)
     .order("target_at", { ascending: true });
 
-  if (error) throw error;
-  return data || [];
+  if (legacyError) throw legacyError;
+  return legacyData || [];
 }
 
 export async function getCountdownEventBySlug(slug) {
+  const { data: bySlugData, error: bySlugError } = await supabase
+    .from("countdowns")
+    .select("id,slug,title,target_at,is_featured,active")
+    .eq("slug", slug)
+    .eq("active", true)
+    .limit(1)
+    .maybeSingle();
+
+  if (!bySlugError && bySlugData) {
+    return {
+      ...bySlugData,
+      slug: bySlugData.slug || bySlugData.id,
+      featured: Boolean(bySlugData.is_featured)
+    };
+  }
+
+  const { data: byIdData, error: byIdError } = await supabase
+    .from("countdowns")
+    .select("id,slug,title,target_at,is_featured,active")
+    .eq("id", slug)
+    .eq("active", true)
+    .limit(1)
+    .maybeSingle();
+
+  if (!byIdError && byIdData) {
+    return {
+      ...byIdData,
+      slug: byIdData.slug || byIdData.id,
+      featured: Boolean(byIdData.is_featured)
+    };
+  }
+
+  if (bySlugError && !["42P01", "42703"].includes(bySlugError.code || "")) throw bySlugError;
+  if (byIdError && !["42P01", "42703"].includes(byIdError.code || "")) throw byIdError;
+
   const { data, error } = await supabase
     .from("school_events")
     .select("slug,title,target_at,featured,active")

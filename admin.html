@@ -35,7 +35,7 @@
   <main class="max-w-6xl mx-auto px-4 md:px-8 py-8 space-y-8">
     <section id="loginBox" class="border-4 border-black bg-white p-6 shadow-brutal max-w-xl">
       <h2 class="headline text-4xl">Login</h2>
-      <p class="text-sm mt-1">Accedi con email e password admin Supabase per gestire articoli e agenda.</p>
+      <p class="text-sm mt-1">Accedi con email e password admin Supabase per gestire articoli, countdown e agenda.</p>
       <form id="loginForm" class="mt-4 space-y-3">
         <input id="email" type="email" required placeholder="Email admin" class="w-full border-2 border-black" />
         <input id="password" type="password" required placeholder="Password admin" class="w-full border-2 border-black" />
@@ -56,6 +56,7 @@
 
       <div class="flex gap-2">
         <button id="openContentArticlesBtn" class="border-2 border-black px-4 py-2 text-xs font-bold uppercase bg-black text-white">Gestione articoli</button>
+        <button id="openContentCountdownBtn" class="border-2 border-black px-4 py-2 text-xs font-bold uppercase bg-white">Gestione countdown</button>
         <button id="openContentAgendaBtn" class="border-2 border-black px-4 py-2 text-xs font-bold uppercase bg-white">Gestione agenda</button>
       </div>
 
@@ -115,6 +116,37 @@
           <h3 class="headline text-3xl">Scelta articoli in evidenza</h3>
           <p class="text-sm">Seleziona gli articoli pubblicati da mostrare in home e riordina la lista in evidenza con drag &amp; drop.</p>
           <div id="featuredManagerList" class="space-y-3"></div>
+        </section>
+      </section>
+
+      <section id="countdownSection" class="hidden space-y-8">
+        <form id="countdownForm" class="border-4 border-black bg-white p-6 shadow-brutal space-y-4">
+          <input type="hidden" id="countdownId" />
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold uppercase">Titolo countdown</label>
+              <input id="countdownTitle" required class="w-full border-2 border-black" placeholder="Fine della scuola" />
+            </div>
+            <div>
+              <label class="text-xs font-bold uppercase">Data e ora target</label>
+              <input id="countdownTargetAt" type="datetime-local" required class="w-full border-2 border-black" />
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-4 items-center">
+            <label class="inline-flex items-center gap-2 font-semibold"><input id="countdownIsFeatured" type="checkbox" /> Countdown principale</label>
+            <label class="inline-flex items-center gap-2 font-semibold"><input id="countdownActive" type="checkbox" checked /> Attivo</label>
+          </div>
+          <div class="flex gap-3">
+            <button type="submit" id="submitCountdownBtn" class="border-2 border-black bg-accent text-white px-4 py-2 text-xs font-bold uppercase shadow-brutal">Salva Countdown</button>
+          </div>
+        </form>
+
+        <section class="border-4 border-black bg-white p-6 shadow-brutal">
+          <div class="flex items-center justify-between gap-3">
+            <h3 class="headline text-3xl">Countdown salvati</h3>
+            <button id="newCountdownBtn" class="border-2 border-black px-3 py-1 text-xs font-bold uppercase">Nuovo countdown</button>
+          </div>
+          <div id="adminCountdowns" class="mt-4 space-y-3"></div>
         </section>
       </section>
 

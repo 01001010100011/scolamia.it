@@ -21,22 +21,28 @@ const articleAttachmentList = document.getElementById("articleAttachmentList");
 
 const agendaForm = document.getElementById("agendaForm");
 const adminAgendaEvents = document.getElementById("adminAgendaEvents");
+const countdownForm = document.getElementById("countdownForm");
+const adminCountdowns = document.getElementById("adminCountdowns");
 
 const articlesSection = document.getElementById("articlesSection");
+const countdownSection = document.getElementById("countdownSection");
 const agendaSection = document.getElementById("agendaSection");
 const articlesView = document.getElementById("articlesView");
 const featuredView = document.getElementById("featuredView");
 
 const openContentArticlesBtn = document.getElementById("openContentArticlesBtn");
+const openContentCountdownBtn = document.getElementById("openContentCountdownBtn");
 const openContentAgendaBtn = document.getElementById("openContentAgendaBtn");
 const openArticlesViewBtn = document.getElementById("openArticlesViewBtn");
 const openFeaturedViewBtn = document.getElementById("openFeaturedViewBtn");
 const newItemBtn = document.getElementById("newItemBtn");
+const newCountdownBtn = document.getElementById("newCountdownBtn");
 
 let currentSection = "articles";
 let draggedFeaturedId = null;
 
 let articles = [];
+let countdowns = [];
 let events = [];
 let featuredIds = [];
 
@@ -95,14 +101,49 @@ function agendaSortValue(value) {
   return Number.isNaN(time) ? Number.POSITIVE_INFINITY : time;
 }
 
+function countdownSortValue(value) {
+  const time = new Date(value || "").getTime();
+  return Number.isNaN(time) ? Number.POSITIVE_INFINITY : time;
+}
+
+function isoToDateTimeLocal(value) {
+  const date = new Date(value || "");
+  if (Number.isNaN(date.getTime())) return "";
+  const offset = date.getTimezoneOffset();
+  const local = new Date(date.getTime() - offset * 60000);
+  return local.toISOString().slice(0, 16);
+}
+
+function dateTimeLocalToIso(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toISOString();
+}
+
+function countdownSlug(title, targetAt, existing = "") {
+  if (existing) return existing;
+  const base = toSlugSafeName(title || "countdown").replace(/^-+|-+$/g, "");
+  const stamp = new Date(targetAt || Date.now()).toISOString().replace(/[-:TZ.]/g, "").slice(0, 12);
+  return `${base || "countdown"}-${stamp}`;
+}
+
 function setContentSection(section) {
-  const showArticles = section === "articles";
   currentSection = section;
+  const showArticles = section === "articles";
+  const showCountdown = section === "countdown";
+  const showAgenda = section === "agenda";
+
   articlesSection.classList.toggle("hidden", !showArticles);
-  agendaSection.classList.toggle("hidden", showArticles);
+  countdownSection.classList.toggle("hidden", !showCountdown);
+  agendaSection.classList.toggle("hidden", !showAgenda);
+
   openContentArticlesBtn.className = `border-2 border-black px-4 py-2 text-xs font-bold uppercase ${showArticles ? "bg-black text-white" : "bg-white"}`;
-  openContentAgendaBtn.className = `border-2 border-black px-4 py-2 text-xs font-bold uppercase ${showArticles ? "bg-white" : "bg-black text-white"}`;
-  newItemBtn.textContent = showArticles ? "Nuovo articolo" : "Nuovo evento";
+  openContentCountdownBtn.className = `border-2 border-black px-4 py-2 text-xs font-bold uppercase ${showCountdown ? "bg-black text-white" : "bg-white"}`;
+  openContentAgendaBtn.className = `border-2 border-black px-4 py-2 text-xs font-bold uppercase ${showAgenda ? "bg-black text-white" : "bg-white"}`;
+
+  if (showArticles) newItemBtn.textContent = "Nuovo articolo";
+  if (showCountdown) newItemBtn.textContent = "Nuovo countdown";
+  if (showAgenda) newItemBtn.textContent = "Nuovo evento";
 }
 
 function setArticleSubView(view) {
@@ -133,12 +174,34 @@ async function requireSettingsRow() {
   return created;
 }
 
+async function ensureCurrentUserIsAdmin() {
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+  if (authError) throw authError;
+  const userId = authData?.user?.id;
+  if (!userId) return false;
+
+  const { data, error } = await supabase
+    .from("admin_users")
+    .select("user_id,role,active")
+    .eq("user_id", userId)
+    .eq("active", true)
+    .maybeSingle();
+
+  if (error) throw error;
+  return Boolean(data && data.role === "admin");
+}
+
 async function loadData() {
-  const [{ data: articleData, error: articleError }, { data: eventData, error: eventError }, settings] = await Promise.all([
+  const [{ data: articleData, error: articleError }, { data: countdownData, error: countdownError }, { data: eventData, error: eventError }, settings] = await Promise.all([
     supabase
       .from("articles")
       .select("id,title,category,excerpt,content,image_url,image_path,published,attachments,created_at,updated_at")
       .order("updated_at", { ascending: false }),
+    supabase
+      .from("countdowns")
+      .select("id,slug,title,target_at,is_featured,active,created_at,updated_at")
+      .order("is_featured", { ascending: false })
+      .order("target_at", { ascending: true }),
     supabase
       .from("agenda_events")
       .select("id,title,category,date,description,created_at,updated_at")
@@ -147,9 +210,11 @@ async function loadData() {
   ]);
 
   if (articleError) throw articleError;
+  if (countdownError) throw countdownError;
   if (eventError) throw eventError;
 
   articles = articleData || [];
+  countdowns = countdownData || [];
   events = (eventData || []).sort((a, b) => agendaSortValue(a.date) - agendaSortValue(b.date));
   featuredIds = Array.isArray(settings.featured_article_ids) ? settings.featured_article_ids : [];
   sanitizeFeaturedIds();
@@ -353,6 +418,63 @@ function resetAgendaForm() {
   document.getElementById("submitAgendaBtn").textContent = "Salva Evento";
 }
 
+function resetCountdownForm() {
+  countdownForm.reset();
+  document.getElementById("countdownId").value = "";
+  document.getElementById("countdownActive").checked = true;
+  document.getElementById("countdownIsFeatured").checked = false;
+  document.getElementById("submitCountdownBtn").textContent = "Salva Countdown";
+}
+
+function startNewCountdown() {
+  setContentSection("countdown");
+  resetCountdownForm();
+  document.getElementById("countdownTitle").focus();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function fillCountdownForm(item) {
+  setContentSection("countdown");
+  document.getElementById("countdownId").value = item.id;
+  document.getElementById("countdownTitle").value = item.title;
+  document.getElementById("countdownTargetAt").value = isoToDateTimeLocal(item.target_at);
+  document.getElementById("countdownIsFeatured").checked = Boolean(item.is_featured);
+  document.getElementById("countdownActive").checked = Boolean(item.active);
+  document.getElementById("submitCountdownBtn").textContent = "Aggiorna Countdown";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function renderAdminCountdowns() {
+  if (!countdowns.length) {
+    adminCountdowns.innerHTML = '<p class="text-sm">Nessun countdown presente.</p>';
+    return;
+  }
+
+  const sorted = [...countdowns].sort((a, b) => {
+    if (a.is_featured === b.is_featured) return countdownSortValue(a.target_at) - countdownSortValue(b.target_at);
+    return a.is_featured ? -1 : 1;
+  });
+
+  adminCountdowns.innerHTML = sorted.map((item) => `
+    <article class="border-2 border-black p-4">
+      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+        <div>
+          <h4 class="text-lg font-semibold">${escapeHtml(item.title)}</h4>
+          <p class="text-sm mt-1">Data target: ${new Date(item.target_at).toLocaleString("it-IT", { dateStyle: "medium", timeStyle: "short" })}</p>
+          <p class="text-xs mt-2">
+            Stato: ${item.active ? "Attivo" : "Disattivo"}
+            ${item.is_featured ? " | In evidenza principale" : ""}
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2 md:justify-end">
+          <button data-countdown-action="edit" data-id="${item.id}" class="border-2 border-black px-3 py-1 text-xs font-bold uppercase">Modifica</button>
+          <button data-countdown-action="delete" data-id="${item.id}" class="border-2 border-black px-3 py-1 text-xs font-bold uppercase text-red-700">Elimina</button>
+        </div>
+      </div>
+    </article>
+  `).join("");
+}
+
 function startNewEvent() {
   setContentSection("agenda");
   resetAgendaForm();
@@ -420,7 +542,8 @@ async function uploadToStorage(articleId, file, kind) {
 async function handleAuthUi() {
   const { data, error } = await supabase.auth.getSession();
   if (error) throw error;
-  const isAuth = Boolean(data?.session);
+  const session = data?.session;
+  const isAuth = Boolean(session);
 
   loginBox.classList.toggle("hidden", isAuth);
   adminPanel.classList.toggle("hidden", !isAuth);
@@ -436,9 +559,19 @@ async function handleAuthUi() {
   }
 
   try {
+    const isAdmin = await ensureCurrentUserIsAdmin();
+    if (!isAdmin) {
+      await supabase.auth.signOut({ scope: "local" });
+      loginBox.classList.remove("hidden");
+      adminPanel.classList.add("hidden");
+      setLoginError("Utente autenticato ma non autorizzato: assegna ruolo admin in Supabase (tabella admin_users).");
+      return false;
+    }
+
     await loadData();
     renderAdminArticles();
     renderFeaturedManager();
+    renderAdminCountdowns();
     renderAdminAgendaEvents();
     setAdminStatus("");
   } catch (error) {
@@ -490,6 +623,11 @@ openContentArticlesBtn.addEventListener("click", () => {
   setArticleSubView("articles");
 });
 
+openContentCountdownBtn.addEventListener("click", () => {
+  setContentSection("countdown");
+  renderAdminCountdowns();
+});
+
 openContentAgendaBtn.addEventListener("click", () => {
   setContentSection("agenda");
   renderAdminAgendaEvents();
@@ -502,12 +640,18 @@ openFeaturedViewBtn.addEventListener("click", () => {
 });
 
 newItemBtn.addEventListener("click", () => {
+  if (currentSection === "countdown") {
+    startNewCountdown();
+    return;
+  }
   if (currentSection === "agenda") {
     startNewEvent();
     return;
   }
   startNewArticle();
 });
+
+newCountdownBtn.addEventListener("click", () => startNewCountdown());
 
 articleImageInput.addEventListener("change", () => {
   const file = articleImageInput.files?.[0];
@@ -633,6 +777,53 @@ articleForm.addEventListener("submit", async (event) => {
   }
 });
 
+countdownForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  try {
+    const id = document.getElementById("countdownId").value || crypto.randomUUID();
+    const now = new Date().toISOString();
+    const title = document.getElementById("countdownTitle").value.trim();
+    const targetAtIso = dateTimeLocalToIso(document.getElementById("countdownTargetAt").value);
+    const isFeatured = document.getElementById("countdownIsFeatured").checked;
+    const active = document.getElementById("countdownActive").checked;
+
+    if (!title) throw new Error("Titolo countdown obbligatorio.");
+    if (!targetAtIso) throw new Error("Data target non valida.");
+
+    const existing = countdowns.find((item) => item.id === id);
+    const payload = {
+      id,
+      slug: countdownSlug(title, targetAtIso, existing?.slug),
+      title,
+      target_at: targetAtIso,
+      is_featured: isFeatured,
+      active,
+      updated_at: now
+    };
+
+    if (!existing) payload.created_at = now;
+
+    if (isFeatured) {
+      const { error: clearFeaturedError } = await supabase
+        .from("countdowns")
+        .update({ is_featured: false, updated_at: now })
+        .neq("id", id);
+      if (clearFeaturedError) throw clearFeaturedError;
+    }
+
+    const { error } = await supabase.from("countdowns").upsert(payload, { onConflict: "id" });
+    if (error) throw error;
+
+    await loadData();
+    resetCountdownForm();
+    renderAdminCountdowns();
+  } catch (error) {
+    console.error(error);
+    alert(error?.message || "Errore durante il salvataggio del countdown.");
+  }
+});
+
 agendaForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
@@ -660,6 +851,36 @@ agendaForm.addEventListener("submit", async (event) => {
   } catch (error) {
     console.error(error);
     alert("Errore durante il salvataggio dell'evento.");
+  }
+});
+
+adminCountdowns.addEventListener("click", async (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
+
+  const action = target.dataset.countdownAction;
+  const id = target.dataset.id;
+  if (!action || !id) return;
+
+  const item = countdowns.find((countdown) => countdown.id === id);
+  if (!item) return;
+
+  try {
+    if (action === "edit") {
+      fillCountdownForm(item);
+      return;
+    }
+
+    if (action === "delete") {
+      if (!confirm("Vuoi eliminare definitivamente questo countdown?")) return;
+      const { error } = await supabase.from("countdowns").delete().eq("id", id);
+      if (error) throw error;
+      await loadData();
+      renderAdminCountdowns();
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Errore operazione countdown.");
   }
 });
 
@@ -833,6 +1054,7 @@ supabase.auth.onAuthStateChange(() => {
 
 async function bootstrapAdmin() {
   renderAttachmentList();
+  resetCountdownForm();
 
   if (REQUIRE_LOGIN_ON_EACH_VISIT) {
     try {
