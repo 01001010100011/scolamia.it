@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Archivio Articoli - ScolaMia.it</title>
-  <meta name="description" content="Archivio completo degli articoli correnti e passati del blog scolastico." />
+  <title>Dettaglio Countdown - ScolaMia.it</title>
+  <meta name="description" content="Dettaglio countdown scolastico con giorni, ore, minuti e secondi." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -26,7 +26,7 @@
     .headline { font-family: "Bebas Neue", sans-serif; letter-spacing: .04em; }
   </style>
 </head>
-<body class="text-ink" data-page-title="Articoli">
+<body class="text-ink" data-page-title="Countdown">
   <header class="sticky top-0 z-50 bg-paper border-b-4 border-black">
     <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
       <a href="index.html" class="flex items-center gap-3">
@@ -35,14 +35,14 @@
         </div>
         <div>
           <p class="headline text-3xl leading-none">ScolaMia.it</p>
-          <p data-page-label class="text-xs font-semibold uppercase tracking-wider">Articoli</p>
+          <p data-page-label class="text-xs font-semibold uppercase tracking-wider">Countdown</p>
         </div>
       </a>
       <nav class="hidden lg:flex items-center gap-6 text-sm font-bold uppercase justify-self-center">
         <a href="index.html" class="hover:text-accent">Home</a>
-        <a href="archivio.html" class="text-accent">Articoli</a>
+        <a href="archivio.html" class="hover:text-accent">Articoli</a>
         <a href="agenda.html" class="hover:text-accent">Agenda</a>
-        <a href="countdown.html" class="hover:text-accent">Countdown</a>
+        <a href="countdown.html" class="text-accent">Countdown</a>
         <a href="contatti.html" class="hover:text-accent">Contatti</a>
       </nav>
       <div class="flex items-center justify-end min-w-[44px] lg:justify-self-end">
@@ -70,24 +70,36 @@
     </aside>
   </div>
 
-  <main class="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-8">
-    <section class="border-4 border-black bg-white p-6 shadow-brutal">
-      <h1 class="headline text-6xl">Archivio articoli</h1>
-      <p class="mt-2 text-sm">Consulta tutti gli articoli pubblicati, inclusi quelli passati.</p>
-      <form id="archiveSearchForm" class="mt-5 flex items-center border-2 border-black bg-paper max-w-xl">
-        <span class="material-symbols-outlined px-3">search</span>
-        <input id="archiveSearchInput" type="search" placeholder="Cerca per titolo, categoria o contenuto" class="w-full border-0 bg-transparent focus:ring-0" />
-      </form>
-    </section>
+  <main class="max-w-6xl mx-auto px-4 md:px-8 py-8 space-y-6">
+    <a href="countdown.html" class="text-xs font-bold uppercase underline">Torna ai countdown</a>
+    <section class="border-4 border-black bg-white p-6 md:p-8 shadow-brutal">
+      <p id="countdownTitle" class="headline text-6xl">Countdown</p>
+      <p id="countdownTarget" class="mt-2 text-sm font-semibold text-slate-600"></p>
+      <p id="countdownDetailStatus" class="hidden mt-3 text-sm font-semibold text-red-700"></p>
 
-    <section class="space-y-3">
-      <h2 class="headline text-5xl">Tutti gli articoli</h2>
-      <div id="allArticles" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      <div id="countdownValues" class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <article class="border-2 border-black p-4 text-center">
+          <p id="valueDays" class="headline text-6xl leading-none">0</p>
+          <p class="mt-1 text-xs uppercase font-bold">Giorni</p>
+        </article>
+        <article class="border-2 border-black p-4 text-center">
+          <p id="valueHours" class="headline text-6xl leading-none">00</p>
+          <p class="mt-1 text-xs uppercase font-bold">Ore</p>
+        </article>
+        <article class="border-2 border-black p-4 text-center">
+          <p id="valueMinutes" class="headline text-6xl leading-none">00</p>
+          <p class="mt-1 text-xs uppercase font-bold">Minuti</p>
+        </article>
+        <article class="border-2 border-black p-4 text-center">
+          <p id="valueSeconds" class="headline text-6xl leading-none">00</p>
+          <p class="mt-1 text-xs uppercase font-bold">Secondi</p>
+        </article>
+      </div>
     </section>
   </main>
 
   <script type="module" src="assets/js/page-label.js"></script>
   <script type="module" src="assets/js/mobile-nav.js"></script>
-  <script type="module" src="assets/js/archivio.js"></script>
+  <script type="module" src="assets/js/countdown-detail.js"></script>
 </body>
 </html>

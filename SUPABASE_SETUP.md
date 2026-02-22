@@ -6,6 +6,7 @@
 - If you migrated from old local/static agenda data, run `supabase/maintenance_fix_agenda_events.sql` once to normalize legacy events.
 - Run `supabase/security_hardening_admin.sql` to enforce authenticated-only admin write access.
 - Run `supabase/seed_presentation_article.sql` to create/update the "Presentazione Sito" article used by the Home hero button.
+- Run `supabase/countdown_events.sql` to create/seed countdown events with public read and authenticated write policies.
 
 ## 2. Create admin user
 - In Authentication > Users, create an admin email/password user.

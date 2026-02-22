@@ -13,6 +13,8 @@ function inferPageLabel() {
     "contatti.html": "Contatti",
     "ricerca.html": "Ricerca",
     "article.html": "Articolo",
+    "countdown.html": "Countdown",
+    "countdown-detail.html": "Countdown",
     "admin.html": "Admin"
   };
   return map[path] || "Pagina";

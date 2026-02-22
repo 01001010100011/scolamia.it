@@ -56,6 +56,32 @@ export async function getAgendaEvents() {
   return data || [];
 }
 
+export async function getCountdownEvents() {
+  const nowIso = new Date().toISOString();
+  const { data, error } = await supabase
+    .from("school_events")
+    .select("slug,title,target_at,featured,active")
+    .eq("active", true)
+    .gte("target_at", nowIso)
+    .order("target_at", { ascending: true });
+
+  if (error) throw error;
+  return data || [];
+}
+
+export async function getCountdownEventBySlug(slug) {
+  const { data, error } = await supabase
+    .from("school_events")
+    .select("slug,title,target_at,featured,active")
+    .eq("slug", slug)
+    .eq("active", true)
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data || null;
+}
+
 export function queryMatches(text, query) {
   return text.toLowerCase().includes(query.toLowerCase());
 }
