@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="ScolaMia.it logo">
+  <rect x="2" y="2" width="60" height="60" rx="4" fill="#0c7ff2" stroke="#101010" stroke-width="4"/>
+  <path d="M32 16 12 25l20 9 16-7.2V38h4V25L32 16Zm-10 22v8c0 3.5 5.8 6 10 6s10-2.5 10-6v-8l-10 4.5L22 38Z" fill="#ffffff"/>
+</svg>
