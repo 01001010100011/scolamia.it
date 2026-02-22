@@ -49,21 +49,21 @@
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <h2 class="headline text-4xl">Dashboard Admin</h2>
         <div class="flex gap-2">
-          <button id="newItemBtn" class="border-2 border-black bg-accent text-white px-4 py-2 text-xs font-bold uppercase">Nuovo articolo</button>
-          <button id="logoutBtn" class="border-2 border-black bg-white px-4 py-2 text-xs font-bold uppercase">Logout</button>
+          <button type="button" id="newItemBtn" class="border-2 border-black bg-accent text-white px-4 py-2 text-xs font-bold uppercase">Nuovo articolo</button>
+          <button type="button" id="logoutBtn" class="border-2 border-black bg-white px-4 py-2 text-xs font-bold uppercase">Logout</button>
         </div>
       </div>
 
       <div class="flex gap-2">
-        <button id="openContentArticlesBtn" class="border-2 border-black px-4 py-2 text-xs font-bold uppercase bg-black text-white">Gestione articoli</button>
-        <button id="openContentCountdownBtn" class="border-2 border-black px-4 py-2 text-xs font-bold uppercase bg-white">Gestione countdown</button>
-        <button id="openContentAgendaBtn" class="border-2 border-black px-4 py-2 text-xs font-bold uppercase bg-white">Gestione agenda</button>
+        <button type="button" id="openContentArticlesBtn" class="border-2 border-black px-4 py-2 text-xs font-bold uppercase bg-black text-white">Gestione articoli</button>
+        <button type="button" id="openContentCountdownBtn" class="border-2 border-black px-4 py-2 text-xs font-bold uppercase bg-white">Gestione countdown</button>
+        <button type="button" id="openContentAgendaBtn" class="border-2 border-black px-4 py-2 text-xs font-bold uppercase bg-white">Gestione agenda</button>
       </div>
 
       <section id="articlesSection" class="space-y-8">
         <div class="flex gap-2">
-          <button id="openArticlesViewBtn" class="border-2 border-black px-4 py-2 text-xs font-bold uppercase bg-black text-white">Modifica articoli</button>
-          <button id="openFeaturedViewBtn" class="border-2 border-black px-4 py-2 text-xs font-bold uppercase bg-white">Articoli in evidenza</button>
+          <button type="button" id="openArticlesViewBtn" class="border-2 border-black px-4 py-2 text-xs font-bold uppercase bg-black text-white">Modifica articoli</button>
+          <button type="button" id="openFeaturedViewBtn" class="border-2 border-black px-4 py-2 text-xs font-bold uppercase bg-white">Articoli in evidenza</button>
         </div>
 
         <section id="articlesView" class="space-y-8">
@@ -144,7 +144,7 @@
         <section class="border-4 border-black bg-white p-6 shadow-brutal">
           <div class="flex items-center justify-between gap-3">
             <h3 class="headline text-3xl">Countdown salvati</h3>
-            <button id="newCountdownBtn" class="border-2 border-black px-3 py-1 text-xs font-bold uppercase">Nuovo countdown</button>
+            <button type="button" id="newCountdownBtn" class="border-2 border-black px-3 py-1 text-xs font-bold uppercase">Nuovo countdown</button>
           </div>
           <div id="adminCountdowns" class="mt-4 space-y-3"></div>
         </section>
@@ -186,6 +186,6 @@
     </section>
   </main>
 
-  <script type="module" src="assets/js/admin.js"></script>
+  <script type="module" src="assets/js/admin.js?v=20260222b"></script>
 </body>
 </html>

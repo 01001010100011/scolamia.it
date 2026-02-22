@@ -618,28 +618,36 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
   await handleAuthUi();
 });
 
-openContentArticlesBtn.addEventListener("click", () => {
+openContentArticlesBtn?.addEventListener("click", (event) => {
+  event.preventDefault();
   setContentSection("articles");
   setArticleSubView("articles");
 });
 
-openContentCountdownBtn.addEventListener("click", () => {
+openContentCountdownBtn?.addEventListener("click", (event) => {
+  event.preventDefault();
   setContentSection("countdown");
   renderAdminCountdowns();
 });
 
-openContentAgendaBtn.addEventListener("click", () => {
+openContentAgendaBtn?.addEventListener("click", (event) => {
+  event.preventDefault();
   setContentSection("agenda");
   renderAdminAgendaEvents();
 });
 
-openArticlesViewBtn.addEventListener("click", () => setArticleSubView("articles"));
-openFeaturedViewBtn.addEventListener("click", () => {
+openArticlesViewBtn?.addEventListener("click", (event) => {
+  event.preventDefault();
+  setArticleSubView("articles");
+});
+openFeaturedViewBtn?.addEventListener("click", (event) => {
+  event.preventDefault();
   setArticleSubView("featured");
   renderFeaturedManager();
 });
 
-newItemBtn.addEventListener("click", () => {
+newItemBtn?.addEventListener("click", (event) => {
+  event.preventDefault();
   if (currentSection === "countdown") {
     startNewCountdown();
     return;
@@ -651,7 +659,10 @@ newItemBtn.addEventListener("click", () => {
   startNewArticle();
 });
 
-newCountdownBtn.addEventListener("click", () => startNewCountdown());
+newCountdownBtn?.addEventListener("click", (event) => {
+  event.preventDefault();
+  startNewCountdown();
+});
 
 articleImageInput.addEventListener("change", () => {
   const file = articleImageInput.files?.[0];
