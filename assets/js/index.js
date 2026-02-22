@@ -1,6 +1,6 @@
 import { getAgendaEvents, getCountdownEvents, getFeaturedArticleIds, getPublishedArticles } from "./public-api.js";
 import { FEATURED_COUNTDOWN_SLUG, FALLBACK_COUNTDOWN_EVENTS, onlyFutureEvents } from "./countdown-data.js";
-import { formatCountdown, formatTargetDate } from "./countdown-core.js";
+import { formatCountdown, formatTargetDate, getRemainingTotals } from "./countdown-core.js";
 import { formatLocalDate } from "./supabase-client.js";
 
 const grid = document.getElementById("articlesGrid");
@@ -67,12 +67,27 @@ function sortByTargetDate(events) {
   return [...events].sort((a, b) => new Date(a.target_at).getTime() - new Date(b.target_at).getTime());
 }
 
+function renderHomeTotals(event, isFeatured) {
+  const totals = getRemainingTotals(event.target_at);
+  if (!totals) return "";
+
+  const textClass = isFeatured ? "text-xs font-semibold opacity-90" : "text-[11px] font-semibold text-slate-600";
+  return `
+    <div data-home-countdown-totals="${event.slug}" class="mt-2 space-y-1 ${textClass}">
+      <p data-home-countdown-hours="${event.slug}">Mancano ${totals.hoursTotal} ore</p>
+      <p data-home-countdown-minutes="${event.slug}">Mancano ${totals.minutesTotal} minuti</p>
+      <p data-home-countdown-seconds="${event.slug}">Mancano ${totals.secondsTotal} secondi</p>
+    </div>
+  `;
+}
+
 function countdownHomeFeaturedCard(event) {
   return `
     <a href="countdown-detail.html?id=${encodeURIComponent(event.slug)}" class="block border-4 border-black bg-black text-white p-6 md:p-8 shadow-brutal lift transition-all h-full">
       <p class="text-xs uppercase font-bold tracking-wide opacity-80">Countdown principale</p>
       <h3 class="headline text-6xl mt-2">${event.title}</h3>
       <p data-home-countdown-value="${event.slug}" class="mt-4 text-2xl font-bold">${formatCountdown(event.target_at)}</p>
+      ${renderHomeTotals(event, true)}
       <p class="mt-2 text-xs uppercase font-bold opacity-80">${formatTargetDate(event.target_at)}</p>
     </a>
   `;
@@ -83,6 +98,7 @@ function countdownHomeCard(event) {
     <a href="countdown-detail.html?id=${encodeURIComponent(event.slug)}" class="block border-2 border-black bg-white p-4 shadow-brutal lift transition-all">
       <h3 class="headline text-4xl mt-1">${event.title}</h3>
       <p data-home-countdown-value="${event.slug}" class="mt-3 text-lg font-bold">${formatCountdown(event.target_at)}</p>
+      ${renderHomeTotals(event, false)}
       <p class="mt-2 text-xs uppercase font-semibold text-slate-500">${formatTargetDate(event.target_at)}</p>
     </a>
   `;
@@ -100,13 +116,31 @@ function selectHomeCountdowns(events) {
   return { featured, next };
 }
 
-function updateHomeCountdownValues() {
-  homeCountdownEvents = onlyFutureEvents(homeCountdownEvents);
+function updateSingleHomeCountdown(event) {
+  const valueNode = document.querySelector(`[data-home-countdown-value="${event.slug}"]`);
+  const totalsWrap = document.querySelector(`[data-home-countdown-totals="${event.slug}"]`);
+  const hoursNode = document.querySelector(`[data-home-countdown-hours="${event.slug}"]`);
+  const minutesNode = document.querySelector(`[data-home-countdown-minutes="${event.slug}"]`);
+  const secondsNode = document.querySelector(`[data-home-countdown-seconds="${event.slug}"]`);
 
-  homeCountdownEvents.forEach((event) => {
-    const node = document.querySelector(`[data-home-countdown-value="${event.slug}"]`);
-    if (node) node.textContent = formatCountdown(event.target_at);
-  });
+  if (!valueNode) return;
+
+  const totals = getRemainingTotals(event.target_at);
+  if (!totals) {
+    valueNode.textContent = "Evento concluso";
+    if (totalsWrap) totalsWrap.classList.add("hidden");
+    return;
+  }
+
+  valueNode.textContent = formatCountdown(event.target_at);
+  if (totalsWrap) totalsWrap.classList.remove("hidden");
+  if (hoursNode) hoursNode.textContent = `Mancano ${totals.hoursTotal} ore`;
+  if (minutesNode) minutesNode.textContent = `Mancano ${totals.minutesTotal} minuti`;
+  if (secondsNode) secondsNode.textContent = `Mancano ${totals.secondsTotal} secondi`;
+}
+
+function updateHomeCountdownValues() {
+  homeCountdownEvents.forEach((event) => updateSingleHomeCountdown(event));
 }
 
 function mountHomeCountdownTicker() {
@@ -122,7 +156,7 @@ function mountHomeCountdownTicker() {
       return;
     }
     updateHomeCountdownValues();
-  }, 60000);
+  }, 1000);
 }
 
 function renderHomeCountdownSection(events) {

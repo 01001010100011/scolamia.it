@@ -3,11 +3,15 @@ function toDate(targetAt) {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-export function getRemainingParts(targetAt) {
+function getDiffMs(targetAt) {
   const date = toDate(targetAt);
   if (!date) return null;
+  return date.getTime() - Date.now();
+}
 
-  const diff = date.getTime() - Date.now();
+export function getRemainingParts(targetAt) {
+  const diff = getDiffMs(targetAt);
+  if (diff === null) return null;
   if (diff <= 0) return null;
 
   const totalSeconds = Math.floor(diff / 1000);
@@ -17,6 +21,18 @@ export function getRemainingParts(targetAt) {
   const seconds = totalSeconds % 60;
 
   return { days, hours, minutes, seconds };
+}
+
+export function getRemainingTotals(targetAt) {
+  const diff = getDiffMs(targetAt);
+  if (diff === null) return null;
+  if (diff <= 0) return null;
+
+  return {
+    hoursTotal: Math.floor(diff / 3600000),
+    minutesTotal: Math.floor(diff / 60000),
+    secondsTotal: Math.floor(diff / 1000)
+  };
 }
 
 export function formatCountdown(targetAt) {

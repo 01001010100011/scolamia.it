@@ -1,6 +1,6 @@
 import { countdownDateTokens, getCountdownEvents, queryMatches } from "./public-api.js";
 import { FEATURED_COUNTDOWN_SLUG, FALLBACK_COUNTDOWN_EVENTS, onlyFutureEvents, sortCountdownEvents } from "./countdown-data.js";
-import { formatCountdown, formatTargetDate } from "./countdown-core.js";
+import { formatCountdown, formatTargetDate, getRemainingTotals } from "./countdown-core.js";
 
 const featuredEl = document.getElementById("featuredCountdown");
 const listEl = document.getElementById("countdownList");
@@ -23,11 +23,26 @@ function filterEvents(events, query) {
   return events.filter((event) => queryMatches(eventSearchSource(event), q));
 }
 
+function renderTotals(event, isFeatured) {
+  const totals = getRemainingTotals(event.target_at);
+  if (!totals) return "";
+
+  const textClass = isFeatured ? "text-xs font-semibold opacity-90" : "text-[11px] font-semibold text-slate-600";
+  return `
+    <div data-countdown-totals="${event.slug}" class="mt-2 space-y-1 ${textClass}">
+      <p data-countdown-hours="${event.slug}">Mancano ${totals.hoursTotal} ore</p>
+      <p data-countdown-minutes="${event.slug}">Mancano ${totals.minutesTotal} minuti</p>
+      <p data-countdown-seconds="${event.slug}">Mancano ${totals.secondsTotal} secondi</p>
+    </div>
+  `;
+}
+
 function renderCard(event, isFeatured = false) {
   return `
     <a href="countdown-detail.html?id=${encodeURIComponent(event.slug)}" class="block border-2 border-black ${isFeatured ? "bg-black text-white p-6 md:p-8" : "bg-white p-4"} shadow-brutal lift transition-all">
       <h3 class="${isFeatured ? "headline text-6xl mt-1" : "headline text-4xl mt-1"}">${event.title}</h3>
       <p data-countdown-value="${event.slug}" class="${isFeatured ? "mt-4 text-2xl font-bold" : "mt-3 text-lg font-bold"}">${formatCountdown(event.target_at)}</p>
+      ${renderTotals(event, isFeatured)}
       <p class="${isFeatured ? "mt-3 text-sm opacity-80" : "mt-2 text-xs uppercase font-semibold text-slate-500"}">${formatTargetDate(event.target_at)}</p>
     </a>
   `;
@@ -62,11 +77,31 @@ function renderState() {
   }
 }
 
+function updateEventNodes(event) {
+  const valueNode = document.querySelector(`[data-countdown-value="${event.slug}"]`);
+  const totalsWrap = document.querySelector(`[data-countdown-totals="${event.slug}"]`);
+  const hoursNode = document.querySelector(`[data-countdown-hours="${event.slug}"]`);
+  const minutesNode = document.querySelector(`[data-countdown-minutes="${event.slug}"]`);
+  const secondsNode = document.querySelector(`[data-countdown-seconds="${event.slug}"]`);
+
+  if (!valueNode) return;
+
+  const totals = getRemainingTotals(event.target_at);
+  if (!totals) {
+    valueNode.textContent = "Evento concluso";
+    if (totalsWrap) totalsWrap.classList.add("hidden");
+    return;
+  }
+
+  valueNode.textContent = formatCountdown(event.target_at);
+  if (totalsWrap) totalsWrap.classList.remove("hidden");
+  if (hoursNode) hoursNode.textContent = `Mancano ${totals.hoursTotal} ore`;
+  if (minutesNode) minutesNode.textContent = `Mancano ${totals.minutesTotal} minuti`;
+  if (secondsNode) secondsNode.textContent = `Mancano ${totals.secondsTotal} secondi`;
+}
+
 function updateCountdownValues() {
-  visibleEvents.forEach((event) => {
-    const node = document.querySelector(`[data-countdown-value="${event.slug}"]`);
-    if (node) node.textContent = formatCountdown(event.target_at);
-  });
+  visibleEvents.forEach((event) => updateEventNodes(event));
 }
 
 function mountTicker() {
@@ -85,7 +120,7 @@ function mountTicker() {
 
     updateCountdownValues();
     renderState();
-  }, 60000);
+  }, 1000);
 }
 
 async function loadEvents() {
