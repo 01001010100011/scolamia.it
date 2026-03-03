@@ -18,6 +18,9 @@ const categoryInput = document.getElementById("category");
 const authorNameInput = document.getElementById("authorName");
 const excerptInput = document.getElementById("excerpt");
 const contentInput = document.getElementById("content");
+const importMarkdownBtn = document.getElementById("importMarkdownBtn");
+const markdownFileInput = document.getElementById("markdownFileInput");
+const markdownImportNotice = document.getElementById("markdownImportNotice");
 const markdownPreview = document.getElementById("markdownPreview");
 const creditAuthorInput = document.getElementById("creditAuthor");
 const creditPhotosInput = document.getElementById("creditPhotos");
@@ -64,6 +67,22 @@ function setImageNotice(message = "") {
   }
   imageNormalizationNotice.textContent = message;
   imageNormalizationNotice.classList.remove("hidden");
+}
+
+function setMarkdownImportNotice(message = "") {
+  if (!markdownImportNotice) return;
+  if (!message) {
+    markdownImportNotice.classList.add("hidden");
+    markdownImportNotice.textContent = "";
+    return;
+  }
+  markdownImportNotice.textContent = message;
+  markdownImportNotice.classList.remove("hidden");
+}
+
+function isMarkdownFile(file) {
+  if (!file) return false;
+  return /\.md$/i.test(file.name || "");
 }
 
 function formatBytes(bytes) {
@@ -473,6 +492,36 @@ cancelBtn.addEventListener("click", () => {
 
 contentInput.addEventListener("input", renderMarkdownPreview);
 contentInput.addEventListener("change", renderMarkdownPreview);
+
+importMarkdownBtn?.addEventListener("click", () => {
+  if (isSaving) return;
+  markdownFileInput?.click();
+});
+
+markdownFileInput?.addEventListener("change", async () => {
+  const file = markdownFileInput.files?.[0];
+  markdownFileInput.value = "";
+  if (!file) return;
+
+  setError("");
+  setMarkdownImportNotice("");
+
+  if (!isMarkdownFile(file)) {
+    setError("Formato non valido: carica solo file .md (Markdown).");
+    return;
+  }
+
+  try {
+    const markdownContent = await file.text();
+    contentInput.value = markdownContent;
+    syncContext();
+    renderMarkdownPreview();
+    setMarkdownImportNotice(`Contenuto importato da ${file.name}.`);
+  } catch (error) {
+    console.error(error);
+    setError("Impossibile leggere il file Markdown selezionato.");
+  }
+});
 
 async function saveArticle(targetPublished) {
   if (isSaving) return;
