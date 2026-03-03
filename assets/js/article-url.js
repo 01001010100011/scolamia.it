@@ -10,7 +10,9 @@ export function slugifyArticleTitle(title) {
 
 export function buildArticleUrl(id, title) {
   const slug = slugifyArticleTitle(title);
-  const safeId = encodeURIComponent(String(id || ""));
-  const slugPart = slug ? `-${slug}` : "";
-  return `/articoli/${safeId}${slugPart}/`;
+  const safeId = String(id || "").trim();
+  const params = new URLSearchParams();
+  params.set("id", safeId);
+  if (slug) params.set("slug", slug);
+  return `/article/?${params.toString()}`;
 }
