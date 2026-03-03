@@ -94,6 +94,11 @@
         <label class="text-xs font-bold uppercase">Contenuto (Markdown)</label>
         <textarea id="content" required rows="12" class="w-full border-2 border-black" placeholder="# Titolo sezione&#10;&#10;Testo con **grassetto**, *corsivo*, [link](https://...).&#10;&#10;- Punto elenco&#10;- Altro punto"></textarea>
         <p class="text-[11px] text-slate-600 mt-1">Scrivi il corpo dell'articolo in Markdown. Metadati e componenti extra restano gestiti separatamente dal layout.</p>
+        <div class="mt-2 flex flex-wrap items-center gap-2">
+          <button type="button" id="importMarkdownBtn" class="border-2 border-black bg-white px-3 py-1 text-[11px] font-bold uppercase">Importa file .md</button>
+          <input id="markdownFileInput" type="file" accept=".md,text/markdown,text/plain" class="hidden" />
+          <p id="markdownImportNotice" class="hidden text-[11px] font-semibold text-accent"></p>
+        </div>
       </div>
       <div class="space-y-2">
         <p class="text-xs font-bold uppercase">Anteprima Markdown (tempo reale)</p>
@@ -133,6 +138,6 @@
     </form>
   </main>
 
-  <script type="module" src="/assets/js/admin-article-editor.js?v=20260224e"></script>
+  <script type="module" src="/assets/js/admin-article-editor.js?v=20260303a"></script>
 </body>
 </html>
