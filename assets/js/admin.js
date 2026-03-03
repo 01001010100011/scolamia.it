@@ -1,4 +1,6 @@
 import { escapeHtml, formatLocalDate, supabase, toSlugSafeName } from "./supabase-client.js?v=20260224e";
+import { buildAgendaSlugMap, getAgendaSlug } from "./agenda-url.js?v=20260303a";
+import { buildCountdownUrl } from "./countdown-url.js?v=20260303a";
 
 const REQUIRE_LOGIN_ON_EACH_VISIT = false;
 
@@ -37,9 +39,11 @@ const featuredManagerList = document.getElementById("featuredManagerList");
 const countdownForm = document.getElementById("countdownForm");
 const adminCountdowns = document.getElementById("adminCountdowns");
 const newCountdownBtn = document.getElementById("newCountdownBtn");
+const countdownSlugPreview = document.getElementById("countdownSlugPreview");
 
 const agendaForm = document.getElementById("agendaForm");
 const adminAgendaEvents = document.getElementById("adminAgendaEvents");
+const agendaSlugPreview = document.getElementById("agendaSlugPreview");
 
 let currentSection = "articles";
 let currentArticleSubView = "articles";
@@ -125,9 +129,46 @@ function dateTimeLocalToIso(value) {
 
 function countdownSlug(title, targetAt, existing = "") {
   if (existing) return existing;
-  const base = toSlugSafeName(title || "countdown").replace(/^-+|-+$/g, "");
-  const stamp = new Date(targetAt || Date.now()).toISOString().replace(/[-:TZ.]/g, "").slice(0, 12);
-  return `${base || "countdown"}-${stamp}`;
+  const base = toSlugSafeName(title || "countdown").replace(/^-+|-+$/g, "") || "countdown";
+  const used = new Set((countdowns || []).map((item) => String(item.slug || "").trim()).filter(Boolean));
+  let candidate = base;
+  let n = 2;
+  while (used.has(candidate)) {
+    candidate = `${base}-${n}`;
+    n += 1;
+  }
+  return candidate;
+}
+
+function renderCountdownSlugPreview() {
+  if (!countdownSlugPreview) return;
+  const id = String(document.getElementById("countdownId").value || "").trim();
+  const title = String(document.getElementById("countdownTitle").value || "").trim();
+  const existing = countdowns.find((item) => item.id === id);
+  const slug = countdownSlug(title || "countdown", "", existing?.slug);
+  const previewEvent = { slug };
+  countdownSlugPreview.textContent = `${window.location.origin}${buildCountdownUrl(previewEvent)}`;
+}
+
+function renderAgendaSlugPreview() {
+  if (!agendaSlugPreview) return;
+  const id = String(document.getElementById("agendaEventId").value || "").trim() || "__agenda-preview__";
+  const title = String(document.getElementById("agendaTitle").value || "").trim();
+  if (!title) {
+    agendaSlugPreview.textContent = `${window.location.origin}/agenda/{slug}/`;
+    return;
+  }
+
+  const working = Array.isArray(events) ? [...events] : [];
+  const idx = working.findIndex((item) => String(item?.id || "") === id);
+  if (idx >= 0) {
+    working[idx] = { ...working[idx], title };
+  } else {
+    working.push({ id, title, created_at: new Date().toISOString(), updated_at: new Date().toISOString() });
+  }
+  const slugMap = buildAgendaSlugMap(working);
+  const slug = getAgendaSlug({ id, title }, slugMap);
+  agendaSlugPreview.textContent = `${window.location.origin}/agenda/${slug}/`;
 }
 
 function setEditContext(context) {
@@ -371,6 +412,7 @@ function resetCountdownForm() {
   document.getElementById("countdownActive").checked = true;
   document.getElementById("countdownIsFeatured").checked = false;
   document.getElementById("submitCountdownBtn").textContent = "Salva Countdown";
+  renderCountdownSlugPreview();
 }
 
 function startNewCountdown() {
@@ -403,6 +445,7 @@ function fillCountdownForm(item) {
   document.getElementById("countdownIsFeatured").checked = Boolean(item.is_featured);
   document.getElementById("countdownActive").checked = Boolean(item.active);
   document.getElementById("submitCountdownBtn").textContent = "Aggiorna Countdown";
+  renderCountdownSlugPreview();
 
   setEditContext({
     type: "Countdown",
@@ -457,6 +500,7 @@ function resetAgendaForm() {
   agendaForm.reset();
   document.getElementById("agendaEventId").value = "";
   document.getElementById("submitAgendaBtn").textContent = "Salva Evento";
+  renderAgendaSlugPreview();
 }
 
 function startNewEvent() {
@@ -488,6 +532,7 @@ function fillAgendaForm(item) {
   document.getElementById("agendaDate").value = normalizeAgendaDateInput(item.date);
   document.getElementById("agendaDescription").value = item.description;
   document.getElementById("submitAgendaBtn").textContent = "Aggiorna Evento";
+  renderAgendaSlugPreview();
 
   setEditContext({
     type: "Evento agenda",
@@ -563,6 +608,8 @@ async function handleAuthUi() {
     renderFeaturedManager();
     renderAdminCountdowns();
     renderAdminAgendaEvents();
+    renderCountdownSlugPreview();
+    renderAgendaSlugPreview();
     setAdminStatus("");
   } catch (err) {
     console.error(err);
@@ -654,6 +701,11 @@ newCountdownBtn?.addEventListener("click", (event) => {
   event.preventDefault();
   startNewCountdown();
 });
+
+document.getElementById("countdownTitle")?.addEventListener("input", renderCountdownSlugPreview);
+document.getElementById("countdownId")?.addEventListener("change", renderCountdownSlugPreview);
+document.getElementById("agendaTitle")?.addEventListener("input", renderAgendaSlugPreview);
+document.getElementById("agendaEventId")?.addEventListener("change", renderAgendaSlugPreview);
 
 editContextSaveBtn?.addEventListener("click", () => {
   if (activeContext?.onSave) activeContext.onSave();

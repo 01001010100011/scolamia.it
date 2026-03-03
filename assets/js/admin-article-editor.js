@@ -1,5 +1,6 @@
 import { escapeHtml, supabase, toSlugSafeName } from "./supabase-client.js?v=20260224e";
 import { markdownToHtml } from "./markdown.js?v=20260303c";
+import { buildArticleSlugMap, getArticleSlug } from "./article-url.js?v=20260303b";
 
 const BUCKET = "article-media";
 
@@ -14,6 +15,7 @@ const contextMeta = document.getElementById("editorContextMeta");
 
 const articleIdInput = document.getElementById("articleId");
 const titleInput = document.getElementById("title");
+const articleSlugPreview = document.getElementById("articleSlugPreview");
 const categoryInput = document.getElementById("category");
 const authorNameInput = document.getElementById("authorName");
 const excerptInput = document.getElementById("excerpt");
@@ -41,6 +43,7 @@ let currentArticleImageFile = null;
 let currentArticleAttachments = [];
 let currentPublished = false;
 let isSaving = false;
+let slugPreviewArticles = [];
 
 const MAX_IMAGE_WIDTH = 1920;
 const MAX_IMAGE_HEIGHT = 1080;
@@ -131,6 +134,47 @@ function syncContext() {
   const status = currentPublished ? "Online" : "Bozza";
   contextTitle.textContent = titleInput.value.trim() || (articleIdInput.value ? "Articolo in modifica" : "Nuovo articolo");
   contextMeta.textContent = `ID: ${id} | Stato: ${status}`;
+  renderArticleSlugPreview();
+}
+
+function renderArticleSlugPreview() {
+  if (!articleSlugPreview) return;
+  const title = titleInput.value.trim();
+  if (!title) {
+    articleSlugPreview.textContent = `${window.location.origin}/article/{slug}/`;
+    return;
+  }
+
+  const currentId = String(articleIdInput.value || "").trim();
+  const workingArticles = Array.isArray(slugPreviewArticles) ? [...slugPreviewArticles] : [];
+  const previewId = currentId || "__draft-preview__";
+  const index = workingArticles.findIndex((item) => String(item?.id || "") === previewId);
+
+  if (index >= 0) {
+    workingArticles[index] = { ...workingArticles[index], title };
+  } else {
+    workingArticles.push({ id: previewId, title, created_at: new Date().toISOString(), updated_at: new Date().toISOString() });
+  }
+
+  const slugMap = buildArticleSlugMap(workingArticles);
+  const slug = getArticleSlug({ id: previewId, title }, slugMap);
+  articleSlugPreview.textContent = `${window.location.origin}/article/${slug}/`;
+}
+
+async function loadArticleSlugPreviewData() {
+  try {
+    const { data, error } = await supabase
+      .from("articles")
+      .select("id,title,created_at,updated_at")
+      .order("created_at", { ascending: true });
+    if (error) throw error;
+    slugPreviewArticles = data || [];
+  } catch (error) {
+    console.warn("Impossibile caricare dati anteprima slug articoli:", error);
+    slugPreviewArticles = [];
+  } finally {
+    renderArticleSlugPreview();
+  }
 }
 
 function renderMarkdownPreview() {
@@ -335,6 +379,7 @@ function mapRecordToForm(record) {
   updateActionButtons();
   syncContext();
   renderMarkdownPreview();
+  renderArticleSlugPreview();
 }
 
 function resetToNew() {
@@ -356,6 +401,7 @@ function resetToNew() {
   updateActionButtons();
   syncContext();
   renderMarkdownPreview();
+  renderArticleSlugPreview();
 }
 
 async function loadArticle(id) {
@@ -394,6 +440,8 @@ async function bootstrap() {
     window.location.href = "/admin/";
     return;
   }
+
+  await loadArticleSlugPreviewData();
 
   const params = new URLSearchParams(window.location.search);
   const id = params.get("id");
@@ -652,6 +700,7 @@ async function saveArticle(targetPublished) {
 
     originalRecord = structuredClone(saved);
     mapRecordToForm(saved);
+    await loadArticleSlugPreviewData();
     setError("");
   } catch (error) {
     console.error(error);
