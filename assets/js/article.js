@@ -1,7 +1,7 @@
 import { getArticleById } from "./public-api.js?v=20260224e";
 import { escapeHtml, formatLocalDate, supabase } from "./supabase-client.js?v=20260224e";
 import { slugifyArticleTitle } from "./article-url.js?v=20260224e";
-import { markdownToHtml } from "./markdown.js?v=20260224e";
+import { markdownToHtml } from "./markdown.js?v=20260303b";
 
 const container = document.getElementById("articleContainer");
 

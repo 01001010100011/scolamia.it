@@ -1,12 +1,34 @@
 import { escapeHtml } from "./supabase-client.js?v=20260224e";
 
+function createTokenStore() {
+  const store = [];
+  return {
+    stash(value) {
+      const token = `%%MD_TOKEN_${store.length}%%`;
+      store.push(value);
+      return token;
+    },
+    restore(text) {
+      return text.replace(/%%MD_TOKEN_(\d+)%%/g, (_, idx) => store[Number(idx)] || "");
+    }
+  };
+}
+
 function parseInline(markdown) {
+  const tokens = createTokenStore();
   let text = escapeHtml(markdown);
-  text = text.replace(/`([^`]+)`/g, "<code>$1</code>");
-  text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" class="underline">$1</a>');
-  text = text.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  text = text.replace(/\*([^*]+)\*/g, "<em>$1</em>");
-  return text;
+
+  text = text.replace(/`([^`]+)`/g, (_, code) => tokens.stash(`<code>${code}</code>`));
+
+  text = text.replace(
+    /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+    (_, label, url) => tokens.stash(`<a href="${url}" target="_blank" rel="noopener" class="underline">${label}</a>`)
+  );
+
+  text = text.replace(/(\*\*|__)(?=\S)([\s\S]*?\S)\1/g, "<strong>$2</strong>");
+  text = text.replace(/(^|[^\w])(\*|_)(?=\S)([\s\S]*?\S)\2(?!\w)/g, "$1<em>$3</em>");
+
+  return tokens.restore(text);
 }
 
 export function markdownToHtml(markdown) {
@@ -96,4 +118,3 @@ export function markdownToHtml(markdown) {
   if (inCode) out.push("</code></pre>");
   return out.join("\n");
 }
-
