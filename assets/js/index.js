@@ -2,7 +2,7 @@ import { getAgendaEvents, getCountdownEvents, getFeaturedArticleIds, getPublishe
 import { FEATURED_COUNTDOWN_SLUG, FALLBACK_COUNTDOWN_EVENTS, countdownTitleWithEmoji, onlyFutureEvents } from "./countdown-data.js?v=20260224e";
 import { formatCountdown, formatTargetDate } from "./countdown-core.js?v=20260224e";
 import { formatLocalDate } from "./supabase-client.js?v=20260224e";
-import { buildArticleSlugMap, buildArticleUrl } from "./article-url.js?v=20260303b";
+import { buildArticleSlugMap, buildArticleUrl } from "./article-url.js?v=20260303c";
 import { buildAgendaSlugMap, buildAgendaUrl } from "./agenda-url.js?v=20260303a";
 import { buildCountdownUrl } from "./countdown-url.js?v=20260303a";
 

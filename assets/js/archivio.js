@@ -1,6 +1,6 @@
 import { getPublishedArticles } from "./public-api.js?v=20260224e";
 import { formatLocalDate } from "./supabase-client.js?v=20260224e";
-import { buildArticleSlugMap, buildArticleUrl } from "./article-url.js?v=20260303b";
+import { buildArticleSlugMap, buildArticleUrl } from "./article-url.js?v=20260303c";
 
 const searchInput = document.getElementById("archiveSearchInput");
 const allEl = document.getElementById("allArticles");

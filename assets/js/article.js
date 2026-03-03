@@ -1,6 +1,6 @@
 import { getArticleById, getPublishedArticles } from "./public-api.js?v=20260224e";
 import { escapeHtml, formatLocalDate, supabase } from "./supabase-client.js?v=20260224e";
-import { buildArticleSlugMap, getArticleSlug } from "./article-url.js?v=20260303b";
+import { buildArticleSlugMap, getArticleSlug } from "./article-url.js?v=20260303c";
 import { markdownToHtml } from "./markdown.js?v=20260303c";
 
 const container = document.getElementById("articleContainer");

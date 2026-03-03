@@ -1,6 +1,6 @@
 import { escapeHtml, supabase, toSlugSafeName } from "./supabase-client.js?v=20260224e";
 import { markdownToHtml } from "./markdown.js?v=20260303c";
-import { buildArticleSlugMap, getArticleSlug } from "./article-url.js?v=20260303b";
+import { buildArticleSlugMap, getArticleSlug } from "./article-url.js?v=20260303c";
 
 const BUCKET = "article-media";
 
