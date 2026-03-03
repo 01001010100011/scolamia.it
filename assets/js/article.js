@@ -8,7 +8,7 @@ const container = document.getElementById("articleContainer");
 function renderCreditsSection(article) {
   const authorName = String(article.author_name || article.credit_author || "").trim();
   const creditRows = [
-    { label: "Autore", value: authorName },
+    { label: "Autore:", value: authorName },
     { label: "Foto / Grafiche", value: article.credit_photos },
     { label: "Direttore responsabile", value: article.credit_director }
   ].filter((item) => String(item.value || "").trim());
