@@ -1,0 +1,11 @@
+:root {
+  --public-grid-line: rgba(0, 0, 0, 0.08);
+}
+
+body.public-grid-bg {
+  background-color: #f4f3ee !important;
+  background-image:
+    linear-gradient(var(--public-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--public-grid-line) 1px, transparent 1px) !important;
+  background-size: 28px 28px !important;
+}

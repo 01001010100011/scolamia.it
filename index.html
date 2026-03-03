@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>scola-mia.com - Home</title>
   <link rel="icon" type="image/svg+xml" href="/assets/favicon-scola-mia.svg" />
+  <link rel="stylesheet" href="/assets/css/public-background.css?v=20260303a" />
   <link rel="apple-touch-icon" href="/assets/social/site-logo-512.png" />
   <meta name="description" content="Il giornale indipendente del liceo L. Rocci, creato dagli studenti per gli studenti." />
   <meta name="theme-color" content="#0c7ff2" />
@@ -60,15 +61,7 @@
     };
   </script>
   <style>
-    :root { --grid-line: rgba(0, 0, 0, 0.08); }
-    body {
-      font-family: "IBM Plex Sans", sans-serif;
-      background:
-        linear-gradient(var(--grid-line) 1px, transparent 1px),
-        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
-        #f4f3ee;
-      background-size: 28px 28px;
-    }
+    body { font-family: "IBM Plex Sans", sans-serif; }
     .headline { font-family: "Bebas Neue", sans-serif; letter-spacing: 0.04em; }
     .lift:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 0 #000; }
     .stagger { opacity: 0; transform: translateY(14px); animation: rise 0.5s ease forwards; }
@@ -121,7 +114,7 @@
     @keyframes rise { to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
-<body class="text-ink" data-page-title="Home">
+<body class="text-ink public-grid-bg" data-page-title="Home">
   <div class="min-h-screen flex flex-col">
     <header class="sticky top-0 z-50 bg-paper border-b-4 border-black">
       <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
