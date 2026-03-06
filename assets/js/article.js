@@ -2,6 +2,7 @@ import { getArticleById, getPublishedArticles } from "./public-api.js?v=20260224
 import { escapeHtml, formatLocalDate, supabase } from "./supabase-client.js?v=20260224e";
 import { buildArticleSlugMap, getArticleSlug } from "./article-url.js?v=20260303c";
 import { markdownToHtml } from "./markdown.js?v=20260303c";
+import { initRecreationTool, renderRecreationToolSection, shouldRenderRecreationTool } from "./recreation-tool.js?v=20260306a";
 
 const container = document.getElementById("articleContainer");
 
@@ -32,12 +33,13 @@ async function isAuthenticated() {
   return Boolean(data?.session);
 }
 
-function renderArticle(article) {
+async function renderArticle(article) {
   const markdownHtml = markdownToHtml(article.content || "");
   const attachments = Array.isArray(article.attachments) ? article.attachments : [];
   const publishedAt = article.created_at || article.updated_at;
   const publishedLabel = formatLocalDate(publishedAt);
   const authorName = String(article.author_name || article.credit_author || "").trim();
+  const showRecreationTool = shouldRenderRecreationTool(article);
 
   container.innerHTML = `
     <p class="text-xs uppercase font-bold text-accent">${escapeHtml(article.category)}</p>
@@ -48,6 +50,7 @@ function renderArticle(article) {
     <div class="mt-8 pt-6 border-t-2 border-black prose max-w-none prose-p:leading-7">
       ${markdownHtml}
     </div>
+    ${showRecreationTool ? renderRecreationToolSection() : ""}
     ${renderCreditsSection(article)}
     ${attachments.length ? `
       <section class="mt-8 pt-6 border-t-2 border-black">
@@ -62,6 +65,10 @@ function renderArticle(article) {
       </section>
     ` : ""}
   `;
+
+  if (showRecreationTool) {
+    await initRecreationTool(article);
+  }
 }
 
 async function bootstrap() {
@@ -108,7 +115,7 @@ async function bootstrap() {
       }
     }
 
-    renderArticle(article);
+    await renderArticle(article);
   } catch (error) {
     console.error(error);
     container.innerHTML = '<p class="text-lg font-semibold">Errore caricamento articolo.</p>';

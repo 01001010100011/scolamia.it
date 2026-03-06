@@ -1,0 +1,952 @@
+{
+  "1AC": {
+    "aula": 1,
+    "palazzina": 1,
+    "sector": "BLU1",
+    "mon": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "tue": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "thu": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "inside"
+    }
+  },
+  "1CL": {
+    "aula": 2,
+    "palazzina": 1,
+    "sector": "BLU1",
+    "mon": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "tue": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "thu": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "inside"
+    }
+  },
+  "5CL": {
+    "aula": 3,
+    "palazzina": 1,
+    "sector": "BLU1",
+    "mon": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "tue": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "thu": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "inside"
+    }
+  },
+  "5AL": {
+    "aula": 4,
+    "palazzina": 1,
+    "sector": "BLU1",
+    "mon": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "tue": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "thu": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "inside"
+    }
+  },
+  "5AC": {
+    "aula": 5,
+    "palazzina": 1,
+    "sector": "BLU1",
+    "mon": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "tue": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "inside"
+    }
+  },
+  "5BC": {
+    "aula": 6,
+    "palazzina": 1,
+    "sector": "BLU1",
+    "mon": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "tue": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "thu": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "inside"
+    }
+  },
+  "1BL": {
+    "aula": 7,
+    "palazzina": 1,
+    "sector": "BLU2",
+    "mon": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "tue": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "thu": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "inside"
+    }
+  },
+  "2BL": {
+    "aula": 8,
+    "palazzina": 1,
+    "sector": "BLU2",
+    "mon": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "tue": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "thu": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "inside"
+    }
+  },
+  "4BL": {
+    "aula": 9,
+    "palazzina": 1,
+    "sector": "BLU2",
+    "mon": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "tue": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "thu": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "inside"
+    }
+  },
+  "5BL": {
+    "aula": 10,
+    "palazzina": 1,
+    "sector": "BLU2",
+    "mon": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "tue": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "thu": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "inside"
+    }
+  },
+  "3BL": {
+    "aula": 11,
+    "palazzina": 1,
+    "sector": "BLU2",
+    "mon": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "tue": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "thu": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "inside"
+    }
+  },
+  "3AS": {
+    "aula": 12,
+    "palazzina": 1,
+    "sector": "BLU2",
+    "mon": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "tue": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "thu": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "inside"
+    }
+  },
+  "1AL": {
+    "aula": 15,
+    "palazzina": 2,
+    "sector": "BLU1",
+    "mon": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "wed": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "fri": {
+      "first": "inside",
+      "second": "outside"
+    }
+  },
+  "3CS": {
+    "aula": 16,
+    "palazzina": 2,
+    "sector": "BLU1",
+    "mon": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "wed": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "fri": {
+      "first": "inside",
+      "second": "outside"
+    }
+  },
+  "LAB R": {
+    "aula": 17,
+    "palazzina": 2,
+    "sector": "BLU1",
+    "mon": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "wed": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "fri": {
+      "first": "inside",
+      "second": "outside"
+    }
+  },
+  "2AL": {
+    "aula": 18,
+    "palazzina": 2,
+    "sector": "BLU1",
+    "mon": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "wed": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "fri": {
+      "first": "inside",
+      "second": "outside"
+    }
+  },
+  "3AL": {
+    "aula": 19,
+    "palazzina": 2,
+    "sector": "BLU1",
+    "mon": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "wed": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "fri": {
+      "first": "inside",
+      "second": "outside"
+    }
+  },
+  "4AS": {
+    "aula": 20,
+    "palazzina": 2,
+    "sector": "BLU1",
+    "mon": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "wed": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "fri": {
+      "first": "inside",
+      "second": "outside"
+    }
+  },
+  "2DS": {
+    "aula": 21,
+    "palazzina": 2,
+    "sector": "BLU1",
+    "mon": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "wed": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "fri": {
+      "first": "inside",
+      "second": "outside"
+    }
+  },
+  "2AS": {
+    "aula": 22,
+    "palazzina": 2,
+    "sector": "BLU1",
+    "mon": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "wed": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "fri": {
+      "first": "inside",
+      "second": "outside"
+    }
+  },
+  "1AS": {
+    "aula": 23,
+    "palazzina": 2,
+    "sector": "BLU2",
+    "mon": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "wed": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "fri": {
+      "first": "inside",
+      "second": "outside"
+    }
+  },
+  "2CS": {
+    "aula": 24,
+    "palazzina": 2,
+    "sector": "BLU2",
+    "mon": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "wed": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "fri": {
+      "first": "inside",
+      "second": "outside"
+    }
+  },
+  "1CS": {
+    "aula": 25,
+    "palazzina": 2,
+    "sector": "BLU2",
+    "mon": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "wed": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "fri": {
+      "first": "inside",
+      "second": "outside"
+    }
+  },
+  "5AS": {
+    "aula": 26,
+    "palazzina": 2,
+    "sector": "BLU2",
+    "mon": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "wed": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "fri": {
+      "first": "inside",
+      "second": "outside"
+    }
+  },
+  "4CL": {
+    "aula": 27,
+    "palazzina": 2,
+    "sector": "BLU2",
+    "mon": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "wed": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "fri": {
+      "first": "inside",
+      "second": "outside"
+    }
+  },
+  "4CS": {
+    "aula": 28,
+    "palazzina": 2,
+    "sector": "BLU2",
+    "mon": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "wed": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "fri": {
+      "first": "inside",
+      "second": "outside"
+    }
+  },
+  "5DS": {
+    "aula": 29,
+    "palazzina": 2,
+    "sector": "BLU2",
+    "mon": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "wed": {
+      "first": "inside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "inside"
+    },
+    "fri": {
+      "first": "inside",
+      "second": "outside"
+    }
+  },
+  "5CS": {
+    "aula": 31,
+    "palazzina": 3,
+    "sector": "CICLAMINO",
+    "mon": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "outside"
+    }
+  },
+  "2CL": {
+    "aula": 32,
+    "palazzina": 3,
+    "sector": "CICLAMINO",
+    "mon": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "outside"
+    }
+  },
+  "4AL": {
+    "aula": 33,
+    "palazzina": 3,
+    "sector": "CICLAMINO",
+    "mon": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "outside"
+    }
+  },
+  "3AC": {
+    "aula": 34,
+    "palazzina": 3,
+    "sector": "CICLAMINO",
+    "mon": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "outside"
+    }
+  },
+  "1BS": {
+    "aula": 35,
+    "palazzina": 4,
+    "sector": "GIALLO",
+    "mon": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "outside"
+    }
+  },
+  "2BS": {
+    "aula": 36,
+    "palazzina": 4,
+    "sector": "GIALLO",
+    "mon": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "outside"
+    }
+  },
+  "2AC": {
+    "aula": 37,
+    "palazzina": 4,
+    "sector": "GIALLO",
+    "mon": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "outside"
+    }
+  },
+  "4AC": {
+    "aula": 38,
+    "palazzina": 4,
+    "sector": "GIALLO",
+    "mon": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "outside"
+    }
+  },
+  "3BS": {
+    "aula": 39,
+    "palazzina": 4,
+    "sector": "GIALLO",
+    "mon": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "outside"
+    }
+  },
+  "5BS": {
+    "aula": 40,
+    "palazzina": 4,
+    "sector": "GIALLO",
+    "mon": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "outside"
+    }
+  },
+  "4BS": {
+    "aula": 41,
+    "palazzina": 4,
+    "sector": "GIALLO",
+    "mon": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "tue": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "wed": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "thu": {
+      "first": "outside",
+      "second": "outside"
+    },
+    "fri": {
+      "first": "outside",
+      "second": "outside"
+    }
+  }
+}
