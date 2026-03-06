@@ -54,7 +54,7 @@ async function renderArticle(article) {
     ${renderCreditsSection(article)}
     ${attachments.length ? `
       <section class="mt-8 pt-6 border-t-2 border-black">
-        <h2 class="headline text-4xl">Allegati</h2>
+        <h2 class="headline text-4xl">📎 Allegati</h2>
         <div class="mt-3 space-y-2">
           ${attachments.map((item) => `
             <a href="${item.url}" download="${escapeHtml(item.name || "allegato")}" class="block border-2 border-black p-3 font-semibold underline">
