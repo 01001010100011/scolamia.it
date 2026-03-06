@@ -1,6 +1,7 @@
 const TARGET_ARTICLE_TITLE = "Nuova circolare sulla ricreazione: cosa cambia davvero";
 const DATA_URL = "/assets/data/turni-ricreazione-completo.json?v=20260306d";
 const BRAND_LOGO_URL = "/assets/social/site-logo-512.png";
+const SELECTED_CLASS_STORAGE_KEY = "scola_mia_recreation_selected_class";
 
 const DAY_CONFIG = [
   { key: "mon", label: "Lunedì" },
@@ -140,6 +141,27 @@ function renderSummary(rows) {
 
 function buildClassMeta(className, classRecord) {
   return `Classe ${className} • Aula ${classRecord.aula} • Palazzina ${classRecord.palazzina}`;
+}
+
+function getStoredSelectedClass() {
+  try {
+    return String(window.localStorage.getItem(SELECTED_CLASS_STORAGE_KEY) || "").trim();
+  } catch {
+    return "";
+  }
+}
+
+function setStoredSelectedClass(value) {
+  try {
+    const normalized = String(value || "").trim();
+    if (!normalized) {
+      window.localStorage.removeItem(SELECTED_CLASS_STORAGE_KEY);
+      return;
+    }
+    window.localStorage.setItem(SELECTED_CLASS_STORAGE_KEY, normalized);
+  } catch {
+    // ignore storage failures (private mode / blocked storage)
+  }
 }
 
 let jsPdfLoaderPromise = null;
@@ -502,6 +524,7 @@ export async function initRecreationTool(article, options = {}) {
     if (!className || !dataset[className]) {
       meta.textContent = "";
       tableArea.innerHTML = "";
+      setStoredSelectedClass("");
       return;
     }
 
@@ -509,11 +532,18 @@ export async function initRecreationTool(article, options = {}) {
     const rows = computeWeekRows(className, classRecord);
     meta.textContent = buildClassMeta(className, classRecord);
     tableArea.innerHTML = renderSummary(rows);
+    setStoredSelectedClass(className);
   };
 
   select.addEventListener("change", () => {
     renderForClass(select.value);
   });
+
+  const savedClass = getStoredSelectedClass();
+  if (savedClass && dataset[savedClass]) {
+    select.value = savedClass;
+    renderForClass(savedClass);
+  }
 
   downloadBtn?.addEventListener("click", async () => {
     if (!selectedClass || !dataset[selectedClass]) {
