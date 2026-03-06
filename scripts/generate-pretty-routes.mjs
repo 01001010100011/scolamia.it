@@ -11,6 +11,7 @@ const ROUTES = [
   { source: "contatti.html", route: "contatti" },
   { source: "countdown.html", route: "countdown" },
   { source: "countdown-detail.html", route: "countdown-detail" },
+  { source: "turni-ricreazione.html", route: "turni-ricreazione" },
   { source: "ricerca.html", route: "ricerca" },
   { source: "admin.html", route: "admin" },
   { source: "admin-article-editor.html", route: "admin-article-editor" }

@@ -2,7 +2,7 @@ import { getArticleById, getPublishedArticles } from "./public-api.js?v=20260224
 import { escapeHtml, formatLocalDate, supabase } from "./supabase-client.js?v=20260224e";
 import { buildArticleSlugMap, getArticleSlug } from "./article-url.js?v=20260303c";
 import { markdownToHtml } from "./markdown.js?v=20260303c";
-import { initRecreationTool, renderRecreationToolSection, shouldRenderRecreationTool } from "./recreation-tool.js?v=20260306d";
+import { initRecreationTool, renderRecreationToolSection, shouldRenderRecreationTool } from "./recreation-tool.js?v=20260307a";
 
 const container = document.getElementById("articleContainer");
 

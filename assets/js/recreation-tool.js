@@ -457,9 +457,12 @@ export function renderRecreationToolSection() {
   `;
 }
 
-export async function initRecreationTool(article) {
-  const mount = document.getElementById("recreationToolMount");
-  if (!mount || !shouldRenderRecreationTool(article)) return;
+export async function initRecreationTool(article, options = {}) {
+  const mountId = options.mountId || "recreationToolMount";
+  const force = Boolean(options.force);
+  const mount = document.getElementById(mountId);
+  if (!mount) return;
+  if (!force && !shouldRenderRecreationTool(article)) return;
 
   const select = document.getElementById("recreationClassSelect");
   const meta = document.getElementById("recreationClassMeta");

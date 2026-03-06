@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="it" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Turni Ricreazione - scola-mia.com</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon-scola-mia.svg" />
+  <link rel="stylesheet" href="/assets/css/public-background.css?v=20260303a" />
+  <meta name="description" content="Strumento dedicato per controllare i turni di ricreazione per classe." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=typography,forms"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { accent: "#0c7ff2", paper: "#f4f3ee", ink: "#101010" },
+          fontFamily: { display: ["Bebas Neue", "sans-serif"], body: ["IBM Plex Sans", "sans-serif"] },
+          boxShadow: { brutal: "4px 4px 0 0 #000" }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: "IBM Plex Sans", sans-serif; background: #f4f3ee; }
+    .headline { font-family: "Bebas Neue", sans-serif; letter-spacing: .04em; }
+  </style>
+</head>
+<body class="text-ink public-grid-bg" data-page-title="Turni ricreazione">
+  <header class="sticky top-0 z-50 bg-paper border-b-4 border-black">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
+      <a href="/" class="flex items-center gap-3">
+        <div class="border-2 border-black bg-white w-10 h-10 overflow-hidden">
+          <img src="/assets/logo-scola-mia.svg" alt="Logo scola-mia.com" class="w-full h-full object-cover" />
+        </div>
+        <div>
+          <p class="headline text-3xl leading-none">scola-mia.com</p>
+          <p data-page-label class="text-xs font-semibold uppercase tracking-wider">Turni ricreazione</p>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center gap-6 text-sm font-bold uppercase justify-self-center">
+        <a href="/" class="hover:text-accent">Home</a>
+        <a href="/archivio/" class="hover:text-accent">Articoli</a>
+        <a href="/countdown/" class="hover:text-accent">Countdown</a>
+        <a href="/agenda/" class="hover:text-accent">Agenda</a>
+        <a href="/contatti/" class="hover:text-accent">Contatti</a>
+      </nav>
+      <div class="flex items-center justify-end min-w-[44px] lg:justify-self-end">
+        <button id="mobileMenuBtn" type="button" class="lg:hidden border-2 border-black bg-white p-2 shadow-brutal" aria-label="Apri menu" aria-controls="mobileMenuBackdrop" aria-expanded="false">
+          <span class="material-symbols-outlined block">menu</span>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div id="mobileMenuBackdrop" class="fixed inset-0 z-[70] hidden lg:hidden bg-black/50">
+    <aside id="mobileMenuDrawer" class="ml-auto h-full w-[84%] max-w-xs border-l-4 border-black bg-paper p-5 transform translate-x-full transition-transform duration-200 ease-out">
+      <div class="flex items-center justify-between">
+        <p class="headline text-4xl">Menu</p>
+        <button id="mobileMenuCloseBtn" type="button" class="border-2 border-black bg-white p-1.5" aria-label="Chiudi menu">
+          <span class="material-symbols-outlined block">close</span>
+        </button>
+      </div>
+      <nav class="mt-6 grid gap-2 text-xs font-bold uppercase">
+        <a href="/" class="border-2 border-black bg-white px-3 py-2">Home</a>
+        <a href="/archivio/" class="border-2 border-black bg-white px-3 py-2">Archivio</a>
+        <a href="/countdown/" class="border-2 border-black bg-white px-3 py-2">Countdown</a>
+        <a href="/agenda/" class="border-2 border-black bg-white px-3 py-2">Agenda</a>
+        <a href="/contatti/" class="border-2 border-black bg-white px-3 py-2">Contatti</a>
+      </nav>
+    </aside>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-4 md:px-8 py-8">
+    <section class="border-4 border-black bg-white p-6 shadow-brutal">
+      <h1 class="headline text-6xl">Controlla i turni di ricreazione</h1>
+      <p class="mt-2 text-sm">Scheda autonoma per consultare rapidamente i turni settimanali della tua classe.</p>
+      <div id="recreationStandaloneContainer" class="mt-4"></div>
+    </section>
+  </main>
+
+  <script type="module" src="/assets/js/page-label.js?v=20260224e"></script>
+  <script type="module" src="/assets/js/mobile-nav.js?v=20260224e"></script>
+  <script type="module" src="/assets/js/shared-footer.js?v=20260224e"></script>
+  <script type="module" src="/assets/js/turni-ricreazione-page.js?v=20260307a"></script>
+</body>
+</html>
