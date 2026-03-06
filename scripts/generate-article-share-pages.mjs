@@ -4,6 +4,7 @@ import path from "node:path";
 const ROOT = process.cwd();
 const SUPABASE_CONFIG_PATH = path.join(ROOT, "assets", "js", "supabase-config.js");
 const OUTPUT_DIR = path.join(ROOT, "article");
+const OG_IMAGE_OUTPUT_DIR = path.join(ROOT, "assets", "social", "article-og");
 const DOMAIN_FALLBACK = "scola-mia.com";
 const DEFAULT_IMAGE = "https://scola-mia.com/assets/social/og-home.png";
 
@@ -22,6 +23,15 @@ function toAbsoluteUrl(value, domain) {
   if (/^https?:\/\//i.test(raw)) return raw;
   if (raw.startsWith("/")) return `https://${domain}${raw}`;
   return `https://${domain}/${raw.replace(/^\/+/, "")}`;
+}
+
+function getExtFromContentType(contentType) {
+  const raw = String(contentType || "").toLowerCase();
+  if (raw.includes("image/jpeg") || raw.includes("image/jpg")) return "jpg";
+  if (raw.includes("image/png")) return "png";
+  if (raw.includes("image/webp")) return "webp";
+  if (raw.includes("image/gif")) return "gif";
+  return "jpg";
 }
 
 function slugifyArticleTitle(title) {
@@ -93,6 +103,44 @@ async function fetchPublishedArticles({ url, key }) {
   return response.json();
 }
 
+async function prepareOgImageDirectory() {
+  await fs.mkdir(OG_IMAGE_OUTPUT_DIR, { recursive: true });
+  const current = await fs.readdir(OG_IMAGE_OUTPUT_DIR, { withFileTypes: true });
+  for (const entry of current) {
+    if (entry.isFile()) {
+      await fs.rm(path.join(OG_IMAGE_OUTPUT_DIR, entry.name), { force: true });
+    }
+  }
+}
+
+async function mirrorArticleImageForOg({ sourceUrl, slug, domain }) {
+  const absoluteSource = toAbsoluteUrl(sourceUrl, domain);
+  if (!absoluteSource) return DEFAULT_IMAGE;
+
+  try {
+    const response = await fetch(absoluteSource, {
+      headers: {
+        "user-agent": "scola-mia-share-generator/1.0"
+      }
+    });
+    if (!response.ok) throw new Error(`status ${response.status}`);
+
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.toLowerCase().startsWith("image/")) throw new Error("not an image content-type");
+
+    const buffer = Buffer.from(await response.arrayBuffer());
+    if (!buffer.length) throw new Error("empty image");
+
+    const ext = getExtFromContentType(contentType);
+    const filename = `${slug}.${ext}`;
+    await fs.writeFile(path.join(OG_IMAGE_OUTPUT_DIR, filename), buffer);
+    return `https://${domain}/assets/social/article-og/${filename}`;
+  } catch (error) {
+    console.warn(`OG image mirror failed for "${slug}", fallback to default:`, error.message || error);
+    return DEFAULT_IMAGE;
+  }
+}
+
 function buildArticleHtml({ title, excerpt, imageUrl, shareUrl, canonicalUrl, redirectUrl }) {
   const safeTitle = escapeHtml(title || "Articolo");
   const hasDescription = Boolean(String(excerpt || "").trim());
@@ -146,6 +194,7 @@ async function main() {
   const supabase = await readSupabaseConfig();
   const articles = await fetchPublishedArticles(supabase);
   const slugById = buildUniqueArticleSlugs(articles);
+  await prepareOgImageDirectory();
 
   await fs.mkdir(OUTPUT_DIR, { recursive: true });
   const existing = await fs.readdir(OUTPUT_DIR, { withFileTypes: true });
@@ -160,7 +209,11 @@ async function main() {
     const folderName = slug;
     const folderPath = path.join(OUTPUT_DIR, folderName);
     const shareUrl = `https://${domain}/article/${slug}/`;
-    const imageUrl = toAbsoluteUrl(article.image_url, domain) || DEFAULT_IMAGE;
+    const imageUrl = await mirrorArticleImageForOg({
+      sourceUrl: article.image_url,
+      slug,
+      domain
+    });
     const redirectUrl = `/article/?slug=${encodeURIComponent(slug)}`;
 
     await fs.mkdir(folderPath, { recursive: true });
