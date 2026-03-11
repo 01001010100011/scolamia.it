@@ -49,7 +49,7 @@
               <button type="button" class="cookie-consent-btn cookie-consent-btn--secondary" data-cookie-action="reject-non-necessary">Rifiuta non necessari</button>
             </div>
             <button type="button" class="cookie-consent-link" data-cookie-action="open-preferences">Personalizza</button>
-            <p class="cookie-consent-banner__note">Potrai modificare la tua scelta in qualsiasi momento dal link 'Preferenze cookie' nel footer.</p>
+            <p class="cookie-consent-banner__note">Potrai modificare la tua scelta in qualsiasi momento dal link 'Preferenze cookie' che trovi in fondo al sito.</p>
           </div>
         </section>
 
