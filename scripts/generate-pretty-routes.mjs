@@ -8,6 +8,7 @@ const ROUTES = [
   { source: "agenda-detail.html", route: "agenda-detail" },
   { source: "archivio.html", route: "archivio" },
   { source: "article.html", route: "article" },
+  { source: "canale-whatsapp.html", route: "canale-whatsapp" },
   { source: "contatti.html", route: "contatti" },
   { source: "cookie.html", route: "cookie" },
   { source: "countdown.html", route: "countdown" },

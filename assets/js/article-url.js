@@ -20,5 +20,5 @@ export function getArticleSlug(article, slugMap = null) {
 
 export function buildArticleUrl(article, slugMap = null) {
   const slug = getArticleSlug(article, slugMap);
-  return `/article/?slug=${encodeURIComponent(slug)}`;
+  return `/articoli/${encodeURIComponent(slug)}/`;
 }

@@ -1,27 +1,39 @@
 <!DOCTYPE html>
-<html lang="it" class="light">
+<html lang="it">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cookie Policy - scola-mia.com</title>
+  <title>Articolo prova 1 - scola-mia.com</title>
   <link rel="icon" type="image/svg+xml" href="/assets/favicon-scola-mia.svg" />
   <link rel="apple-touch-icon" sizes="180x180" href="https://scola-mia.com/apple-touch-icon-v2.png" />
   <link rel="apple-touch-icon-precomposed" href="https://scola-mia.com/apple-touch-icon-precomposed-v2.png" />
+    <meta name="description" content="prova numero 1" />
+  <link rel="canonical" href="https://scola-mia.com/articoli/articolo-prova-1/" />
+  <meta name="robots" content="noindex, follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Scola-Mia.com" />
+  <meta property="og:locale" content="it_IT" />
+  <meta property="og:url" content="https://scola-mia.com/articoli/articolo-prova-1/" />
+  <meta property="og:title" content="Articolo prova 1" />
+  <meta property="og:description" content="prova numero 1" />
+  <meta property="og:image" content="https://scola-mia.com/assets/social/og-home.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Articolo prova 1" />
+  <meta name="twitter:description" content="prova numero 1" />
+  <meta name="twitter:image" content="https://scola-mia.com/assets/social/og-home.png" />
   <script src="/assets/js/enforce-clean-url.js?v=20260311a"></script>
-  <link rel="canonical" href="https://scola-mia.com/cookie/" />
   <link rel="stylesheet" href="/assets/css/public-background.css?v=20260303a" />
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260311a" />
-  <meta name="description" content="Informazioni sui cookie utilizzati da scola-mia.com e su come gestire le preferenze di consenso." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com?plugins=typography,forms"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          colors: { accent: "#0c7ff2", paper: "#f4f3ee", ink: "#101010", marker: "#ffe66d" },
+          colors: { accent: "#0c7ff2", paper: "#f4f3ee", ink: "#101010" },
           fontFamily: { display: ["Bebas Neue", "sans-serif"], body: ["IBM Plex Sans", "sans-serif"] },
           boxShadow: { brutal: "4px 4px 0 0 #000" }
         }
@@ -31,19 +43,20 @@
   <style>
     body { font-family: "IBM Plex Sans", sans-serif; background: #f4f3ee; }
     .headline { font-family: "Bebas Neue", sans-serif; letter-spacing: .04em; }
+    .detail-shell { width: min(56rem, calc(100vw - 2rem)); margin-inline: auto; }
   </style>
 </head>
-<body class="text-ink public-grid-bg" data-page-title="Cookie Policy">
+<body class="text-ink public-grid-bg" data-page-title="Articolo" data-article-slug="articolo-prova-1">
   <script src="/assets/js/cookie-consent-bootstrap.js?v=20260311a"></script>
   <header class="sticky top-0 z-50 bg-paper border-b-4 border-black">
     <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
       <a href="/" class="flex items-center gap-3">
         <div class="border-2 border-black bg-white w-10 h-10 overflow-hidden">
-          <img src="/assets/logo-scola-mia.svg" alt="Logo scola-mia.com" class="w-full h-full object-cover" />
-        </div>
+            <img src="/assets/logo-scola-mia.svg" alt="Logo scola-mia.com" class="w-full h-full object-cover" />
+          </div>
         <div>
           <p class="headline text-3xl leading-none">scola-mia.com</p>
-          <p data-page-label class="text-xs font-semibold uppercase tracking-wider">Cookie Policy</p>
+          <p data-page-label class="text-xs font-semibold uppercase tracking-wider">Articolo</p>
         </div>
       </a>
       <nav class="hidden lg:flex items-center gap-6 text-sm font-bold uppercase justify-self-center">
@@ -60,7 +73,6 @@
       </div>
     </div>
   </header>
-
   <div id="mobileMenuBackdrop" class="fixed inset-0 z-[70] hidden lg:hidden bg-black/50">
     <aside id="mobileMenuDrawer" class="ml-auto h-full w-[84%] max-w-xs border-l-4 border-black bg-paper p-5 transform translate-x-full transition-transform duration-200 ease-out">
       <div class="flex items-center justify-between">
@@ -78,57 +90,17 @@
       </nav>
     </aside>
   </div>
-
-  <main class="max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-12">
-    <section class="border-4 border-black bg-white p-6 md:p-8 shadow-brutal">
-      <p class="text-xs font-bold uppercase tracking-[0.18em] text-accent">Privacy</p>
-      <h1 class="headline text-6xl md:text-7xl mt-2">Cookie Policy</h1>
-      <p class="mt-4 text-sm md:text-base max-w-3xl">Questa pagina spiega quali cookie utilizza scola-mia.com, per quali finalità e come puoi modificare le tue preferenze in qualsiasi momento.</p>
-      <div class="mt-6">
-        <button type="button" data-cookie-policy-open class="cookie-preferences-open-inline">Apri preferenze cookie</button>
-      </div>
-    </section>
-
-    <section class="mt-8 space-y-5">
-      <article class="border-4 border-black bg-white p-6 shadow-brutal">
-        <h2 class="headline text-4xl">Cosa sono i cookie</h2>
-        <p class="mt-3 text-sm md:text-base leading-7">I cookie sono piccoli file di testo utilizzati dai siti web per garantire il corretto funzionamento e raccogliere informazioni statistiche.</p>
-      </article>
-
-      <article class="border-4 border-black bg-white p-6 shadow-brutal">
-        <h2 class="headline text-4xl">Quali cookie utilizziamo</h2>
-        <div class="mt-4 grid gap-4 md:grid-cols-2">
-          <div class="border-2 border-black p-4">
-            <h3 class="headline text-3xl">Cookie necessari</h3>
-            <p class="mt-2 text-sm md:text-base leading-7">Servono al funzionamento del sito e alla memorizzazione delle preferenze.</p>
-          </div>
-          <div class="border-2 border-black p-4">
-            <h3 class="headline text-3xl">Cookie statistici</h3>
-            <p class="mt-2 text-sm md:text-base leading-7">Con il tuo consenso utilizziamo Google Analytics per raccogliere statistiche aggregate sull'utilizzo del sito.</p>
-          </div>
-        </div>
-      </article>
-
-      <article class="border-4 border-black bg-white p-6 shadow-brutal">
-        <h2 class="headline text-4xl">Gestione delle preferenze</h2>
-        <p class="mt-3 text-sm md:text-base leading-7">Puoi modificare le preferenze in qualsiasi momento dal link "Preferenze cookie" che trovi in fondo al sito.</p>
-      </article>
-
-      <article class="border-4 border-black bg-white p-6 shadow-brutal">
-        <h2 class="headline text-4xl">Strumenti di terze parti</h2>
-        <p class="mt-3 text-sm md:text-base leading-7">Le statistiche del sito vengono raccolte tramite Google Analytics configurato tramite Cloudflare Zaraz.</p>
-      </article>
-
-      <article class="border-4 border-black bg-white p-6 shadow-brutal">
-        <h2 class="headline text-4xl">Aggiornamenti</h2>
-        <p class="mt-3 text-sm md:text-base leading-7">La Cookie Policy può essere aggiornata nel tempo.</p>
-      </article>
-    </section>
+  <main class="max-w-7xl mx-auto px-4 md:px-8 py-10">
+    <div class="detail-shell">
+      <a href="/" class="text-xs font-bold uppercase underline">Torna alla home</a>
+      <article id="articleContainer" class="mt-4 w-full border-4 border-black bg-white p-6 md:p-10 shadow-brutal"></article>
+    </div>
   </main>
 
   <script type="module" src="/assets/js/page-label.js?v=20260224e"></script>
   <script type="module" src="/assets/js/mobile-nav.js?v=20260224e"></script>
   <script type="module" src="/assets/js/shared-footer.js?v=20260311a"></script>
+  <script type="module" src="/assets/js/article.js?v=20260311a"></script>
   <script src="/assets/js/cookie-consent-ui.js?v=20260311a"></script>
 </body>
 </html>

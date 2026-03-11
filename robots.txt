@@ -4,5 +4,7 @@ Allow: /
 # Keep admin surfaces out of search results
 Disallow: /admin/
 Disallow: /admin-article-editor/
+Disallow: /*?*
+Disallow: /ricerca?*
 
 Sitemap: https://scola-mia.com/sitemap.xml

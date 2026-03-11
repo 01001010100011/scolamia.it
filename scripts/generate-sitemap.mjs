@@ -3,23 +3,17 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const SUPABASE_CONFIG_PATH = path.join(ROOT, "assets", "js", "supabase-config.js");
-
 const DOMAIN_FALLBACK = "scola-mia.com";
-const INDEX_PRIORITY = "1.0";
-const DEFAULT_PRIORITY = "0.7";
-const INDEX_CHANGEFREQ = "daily";
-const DEFAULT_CHANGEFREQ = "weekly";
 
-const PAGE_RULES = {
-  "archivio": { changefreq: "daily", priority: "0.9" },
-  "article": { changefreq: "daily", priority: "0.8" },
-  "countdown": { changefreq: "daily", priority: "0.8" },
-  "agenda": { changefreq: "daily", priority: "0.8" },
-  "contatti": { changefreq: "weekly", priority: "0.7" },
-  "cookie": { changefreq: "monthly", priority: "0.5" },
-  "turni-ricreazione": { changefreq: "weekly", priority: "0.7" },
-  "ricerca": { changefreq: "weekly", priority: "0.6" }
-};
+const STATIC_ROUTES = [
+  { route: "archivio", changefreq: "daily", priority: "0.9" },
+  { route: "agenda", changefreq: "daily", priority: "0.8" },
+  { route: "contatti", changefreq: "weekly", priority: "0.7" },
+  { route: "countdown", changefreq: "daily", priority: "0.8" },
+  { route: "cookie", changefreq: "monthly", priority: "0.5" },
+  { route: "turni-ricreazione", changefreq: "weekly", priority: "0.7" },
+  { route: "ricerca", changefreq: "weekly", priority: "0.6" }
+];
 
 function slugifyText(value) {
   return String(value || "")
@@ -29,19 +23,6 @@ function slugifyText(value) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 80);
-}
-
-function formatDate(date) {
-  return date.toISOString().slice(0, 10);
-}
-
-function xmlEscape(value) {
-  return String(value || "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&apos;");
 }
 
 function buildUniqueSlugMap(items, getId, getTitle) {
@@ -66,18 +47,30 @@ function buildUniqueSlugMap(items, getId, getTitle) {
   return out;
 }
 
+function isNoindexArticleSlug(slug) {
+  return /\b(prova|test|preview)\b/i.test(String(slug || ""));
+}
+
+function formatDate(date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function xmlEscape(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&apos;");
+}
+
 async function resolveDomain() {
-  const cnamePath = path.join(ROOT, "CNAME");
   try {
-    const value = (await fs.readFile(cnamePath, "utf8")).trim();
+    const value = (await fs.readFile(path.join(ROOT, "CNAME"), "utf8")).trim();
     return value || DOMAIN_FALLBACK;
   } catch {
     return DOMAIN_FALLBACK;
   }
-}
-
-function publicRouteFolders() {
-  return ["archivio", "article", "countdown", "agenda", "contatti", "cookie", "turni-ricreazione", "ricerca"];
 }
 
 async function readSupabaseConfig() {
@@ -93,9 +86,7 @@ async function readSupabaseConfig() {
 async function fetchRows({ url, key }, table, select, params = {}) {
   const endpoint = new URL(`${url}/rest/v1/${table}`);
   endpoint.searchParams.set("select", select);
-  for (const [k, v] of Object.entries(params)) {
-    endpoint.searchParams.set(k, v);
-  }
+  for (const [k, v] of Object.entries(params)) endpoint.searchParams.set(k, v);
 
   const response = await fetch(endpoint, {
     headers: {
@@ -127,31 +118,21 @@ async function buildSitemap() {
   const domain = await resolveDomain();
   const supabase = await readSupabaseConfig();
   const entries = [];
+  const seen = new Set();
 
-  const nowDate = formatDate(new Date());
+  const pushEntry = (url, lastmod, changefreq, priority) => {
+    if (seen.has(url)) return;
+    seen.add(url);
+    entries.push(xmlEntry(url, lastmod, changefreq, priority));
+  };
+
   const indexStat = await fs.stat(path.join(ROOT, "index.html"));
-  entries.push(
-    xmlEntry(
-      `https://${domain}/`,
-      formatDate(indexStat.mtime),
-      INDEX_CHANGEFREQ,
-      INDEX_PRIORITY
-    )
-  );
+  pushEntry(`https://${domain}/`, formatDate(indexStat.mtime), "daily", "1.0");
 
-  for (const route of publicRouteFolders()) {
-    const filePath = path.join(ROOT, route, "index.html");
+  for (const item of STATIC_ROUTES) {
+    const filePath = path.join(ROOT, item.route, "index.html");
     const stat = await fs.stat(filePath);
-    const rule = PAGE_RULES[route];
-
-    entries.push(
-      xmlEntry(
-        `https://${domain}/${route}/`,
-        formatDate(stat.mtime),
-        rule?.changefreq || DEFAULT_CHANGEFREQ,
-        rule?.priority || DEFAULT_PRIORITY
-      )
-    );
+    pushEntry(`https://${domain}/${item.route}/`, formatDate(stat.mtime), item.changefreq, item.priority);
   }
 
   const articles = await fetchRows(
@@ -163,38 +144,9 @@ async function buildSitemap() {
   const articleSlugMap = buildUniqueSlugMap(articles || [], (x) => x.id, (x) => x.title);
   for (const article of articles || []) {
     const slug = articleSlugMap.get(String(article.id || ""));
-    if (!slug) continue;
-    entries.push(xmlEntry(`https://${domain}/article/${slug}/`, nowDate, "weekly", "0.7"));
-  }
-
-  let countdowns = [];
-  try {
-    countdowns = await fetchRows(
-      supabase,
-      "countdowns",
-      "slug,updated_at",
-      { active: "eq.true", order: "target_at.asc" }
-    );
-  } catch {
-    countdowns = [];
-  }
-  for (const item of countdowns || []) {
-    const slug = String(item?.slug || "").trim();
-    if (!slug) continue;
-    entries.push(xmlEntry(`https://${domain}/countdown/${slug}/`, nowDate, "daily", "0.7"));
-  }
-
-  const agendaEvents = await fetchRows(
-    supabase,
-    "agenda_events",
-    "id,title,created_at,updated_at",
-    { order: "date.asc" }
-  );
-  const agendaSlugMap = buildUniqueSlugMap(agendaEvents || [], (x) => x.id, (x) => x.title);
-  for (const event of agendaEvents || []) {
-    const slug = agendaSlugMap.get(String(event.id || ""));
-    if (!slug) continue;
-    entries.push(xmlEntry(`https://${domain}/agenda/${slug}/`, nowDate, "weekly", "0.7"));
+    if (!slug || isNoindexArticleSlug(slug)) continue;
+    const lastmod = formatDate(new Date(article.updated_at || article.created_at || Date.now()));
+    pushEntry(`https://${domain}/articoli/${slug}/`, lastmod, "weekly", "0.7");
   }
 
   return (

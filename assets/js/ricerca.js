@@ -10,7 +10,7 @@ import {
 import { FALLBACK_COUNTDOWN_EVENTS, countdownTitleWithEmoji, onlyFutureEvents } from "./countdown-data.js?v=20260224e";
 import { formatTargetDate } from "./countdown-core.js?v=20260224e";
 import { formatLocalDate } from "./supabase-client.js?v=20260224e";
-import { buildArticleSlugMap, buildArticleUrl } from "./article-url.js?v=20260303c";
+import { buildArticleSlugMap, buildArticleUrl } from "./article-url.js?v=20260311a";
 import { buildAgendaSlugMap, buildAgendaUrl } from "./agenda-url.js?v=20260303a";
 import { buildCountdownUrl } from "./countdown-url.js?v=20260303a";
 
@@ -25,6 +25,33 @@ let events = [];
 let countdowns = [];
 let articleSlugMap = new Map();
 let agendaSlugMap = new Map();
+const SEARCH_CANONICAL = "https://scola-mia.com/ricerca/";
+
+function ensureHeadTag({ selector, createTag = "meta", attributes = {} }) {
+  let element = document.head.querySelector(selector);
+  if (!element) {
+    element = document.createElement(createTag);
+    Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
+    document.head.appendChild(element);
+  }
+  return element;
+}
+
+function syncSearchSeo() {
+  const hasParams = new URLSearchParams(window.location.search).size > 0;
+  const canonical = ensureHeadTag({
+    selector: 'link[rel="canonical"]',
+    createTag: "link",
+    attributes: { rel: "canonical" }
+  });
+  canonical.setAttribute("href", SEARCH_CANONICAL);
+
+  const robots = ensureHeadTag({
+    selector: 'meta[name="robots"]',
+    attributes: { name: "robots" }
+  });
+  robots.setAttribute("content", hasParams ? "noindex, follow" : "index, follow");
+}
 
 function isMobileContext() {
   return window.matchMedia("(max-width: 1023px)").matches
@@ -153,10 +180,12 @@ async function bootstrap() {
     const query = searchInput.value.trim();
     const url = query ? `/ricerca/?q=${encodeURIComponent(query)}` : "/ricerca/";
     history.replaceState(null, "", url);
+    syncSearchSeo();
     render(query);
   });
 
   searchInput.addEventListener("input", () => render(searchInput.value));
+  syncSearchSeo();
   render(initialQuery);
 
   if (shouldFocus && isMobileContext()) {

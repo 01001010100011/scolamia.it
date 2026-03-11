@@ -159,7 +159,7 @@ function renderArticleSlugPreview() {
   if (!articleSlugPreview) return;
   const title = titleInput.value.trim();
   if (!title) {
-    articleSlugPreview.textContent = `${window.location.origin}/article/{slug}/`;
+    articleSlugPreview.textContent = `${window.location.origin}/articoli/{slug}/`;
     return;
   }
 
@@ -176,7 +176,7 @@ function renderArticleSlugPreview() {
 
   const slugMap = buildArticleSlugMap(workingArticles);
   const slug = getArticleSlug({ id: previewId, title }, slugMap);
-  articleSlugPreview.textContent = `${window.location.origin}/article/${slug}/`;
+  articleSlugPreview.textContent = `${window.location.origin}/articoli/${slug}/`;
 }
 
 async function loadArticleSlugPreviewData() {

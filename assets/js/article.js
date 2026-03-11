@@ -1,10 +1,107 @@
 import { getArticleById, getPublishedArticles } from "./public-api.js?v=20260224e";
 import { escapeHtml, formatLocalDate, supabase } from "./supabase-client.js?v=20260224e";
-import { buildArticleSlugMap, getArticleSlug } from "./article-url.js?v=20260303c";
+import { buildArticleSlugMap, getArticleSlug } from "./article-url.js?v=20260311a";
 import { markdownToHtml } from "./markdown.js?v=20260303c";
 import { initRecreationTool, renderRecreationToolSection, shouldRenderRecreationTool } from "./recreation-tool.js?v=20260307c";
 
 const container = document.getElementById("articleContainer");
+const DOMAIN = "https://scola-mia.com";
+
+function ensureMetaTag({ selector, createTag = "meta", attributes = {} }) {
+  let element = document.head.querySelector(selector);
+  if (!element) {
+    element = document.createElement(createTag);
+    Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
+    document.head.appendChild(element);
+  }
+  return element;
+}
+
+function isNoindexArticleSlug(slug) {
+  return /\b(prova|test|preview)\b/i.test(String(slug || ""));
+}
+
+function syncArticleSeo(article, slug) {
+  const canonicalUrl = `${DOMAIN}/articoli/${encodeURIComponent(slug)}/`;
+  const title = String(article?.title || "Articolo").trim();
+  const excerpt = String(article?.excerpt || "").trim();
+  const imageUrl = String(article?.image_url || "").trim();
+  const isCanonicalPath = /^\/articoli\/[^/]+\/?$/.test(window.location.pathname);
+  const shouldNoindex = !isCanonicalPath || isNoindexArticleSlug(slug);
+
+  document.title = `${title} - scola-mia.com`;
+
+  const canonicalEl = ensureMetaTag({
+    selector: 'link[rel="canonical"]',
+    createTag: "link",
+    attributes: { rel: "canonical" }
+  });
+  canonicalEl.setAttribute("href", canonicalUrl);
+
+  const descriptionEl = ensureMetaTag({
+    selector: 'meta[name="description"]',
+    attributes: { name: "description" }
+  });
+  descriptionEl.setAttribute("content", excerpt || `Leggi l'articolo "${title}" su Scola-Mia.com.`);
+
+  const robotsEl = ensureMetaTag({
+    selector: 'meta[name="robots"]',
+    attributes: { name: "robots" }
+  });
+  robotsEl.setAttribute("content", shouldNoindex ? "noindex, follow" : "index, follow");
+
+  const ogTitleEl = ensureMetaTag({
+    selector: 'meta[property="og:title"]',
+    attributes: { property: "og:title" }
+  });
+  ogTitleEl.setAttribute("content", title);
+
+  if (excerpt) {
+    const ogDescriptionEl = ensureMetaTag({
+      selector: 'meta[property="og:description"]',
+      attributes: { property: "og:description" }
+    });
+    ogDescriptionEl.setAttribute("content", excerpt);
+
+    const twitterDescriptionEl = ensureMetaTag({
+      selector: 'meta[name="twitter:description"]',
+      attributes: { name: "twitter:description" }
+    });
+    twitterDescriptionEl.setAttribute("content", excerpt);
+  }
+
+  const ogUrlEl = ensureMetaTag({
+    selector: 'meta[property="og:url"]',
+    attributes: { property: "og:url" }
+  });
+  ogUrlEl.setAttribute("content", canonicalUrl);
+
+  const ogTypeEl = ensureMetaTag({
+    selector: 'meta[property="og:type"]',
+    attributes: { property: "og:type" }
+  });
+  ogTypeEl.setAttribute("content", "article");
+
+  const twitterTitleEl = ensureMetaTag({
+    selector: 'meta[name="twitter:title"]',
+    attributes: { name: "twitter:title" }
+  });
+  twitterTitleEl.setAttribute("content", title);
+
+  if (imageUrl) {
+    const ogImageEl = ensureMetaTag({
+      selector: 'meta[property="og:image"]',
+      attributes: { property: "og:image" }
+    });
+    ogImageEl.setAttribute("content", imageUrl);
+
+    const twitterImageEl = ensureMetaTag({
+      selector: 'meta[name="twitter:image"]',
+      attributes: { name: "twitter:image" }
+    });
+    twitterImageEl.setAttribute("content", imageUrl);
+  }
+}
 
 function renderCreditsSection(article) {
   const authorName = String(article.author_name || article.credit_author || "").trim();
@@ -73,11 +170,12 @@ async function renderArticle(article) {
 
 async function bootstrap() {
   const params = new URLSearchParams(window.location.search);
-  const pathMatch = window.location.pathname.match(/^\/article\/([^/]+)\/?$/);
+  const pathMatch = window.location.pathname.match(/^\/(?:article|articoli)\/([^/]+)\/?$/);
   const pathSlug = pathMatch ? decodeURIComponent(pathMatch[1]) : "";
   const bodyId = document.body?.dataset?.articleId || "";
+  const bodySlug = document.body?.dataset?.articleSlug || "";
   const id = params.get("id") || bodyId;
-  const slug = params.get("slug") || pathSlug;
+  const slug = params.get("slug") || bodySlug || pathSlug;
   if (!id && !slug) {
     container.innerHTML = '<p class="text-lg font-semibold">Articolo non trovato.</p>';
     return;
@@ -109,10 +207,11 @@ async function bootstrap() {
 
     const canonicalSlug = getArticleSlug(article, slugMap);
     if (canonicalSlug) {
-      const canonicalPath = `/article/${encodeURIComponent(canonicalSlug)}/`;
+      const canonicalPath = `/articoli/${encodeURIComponent(canonicalSlug)}/`;
       if (window.location.pathname !== canonicalPath) {
         history.replaceState(null, "", canonicalPath);
       }
+      syncArticleSeo(article, canonicalSlug);
     }
 
     await renderArticle(article);
