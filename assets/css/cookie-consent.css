@@ -94,6 +94,11 @@
   --accent: #0c7ff2;
 }
 
+.cookie-preferences-modal {
+  --paper: #f4f3ee;
+  --accent: #0c7ff2;
+}
+
 .cookie-consent-banner {
   width: auto;
 }
@@ -202,7 +207,7 @@
 .cookie-preferences-modal__panel {
   width: min(760px, calc(100vw - 2rem));
   border: 3px solid #000;
-  background: var(--paper);
+  background: linear-gradient(180deg, #f7f5ef 0%, var(--paper) 100%);
   box-shadow: 7px 7px 0 0 #000;
 }
 
@@ -298,6 +303,7 @@
 
 .cookie-preferences-modal__panel {
   padding: 1.35rem;
+  color: #101010;
 }
 
 .cookie-preferences-modal__header {
