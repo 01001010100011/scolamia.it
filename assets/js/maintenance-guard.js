@@ -22,6 +22,16 @@ function isAllowedPath(pathname) {
   return ALLOWED_PREFIXES.some((prefix) => normalized.startsWith(prefix));
 }
 
+function getMaintenanceReturnPath() {
+  try {
+    const from = new URL(window.location.href).searchParams.get("from");
+    if (!from || !from.startsWith("/")) return "/";
+    return from;
+  } catch {
+    return "/";
+  }
+}
+
 async function runMaintenanceGuard() {
   const currentPath = normalizePath(window.location.pathname);
 
@@ -33,7 +43,7 @@ async function runMaintenanceGuard() {
         return;
       }
 
-      window.location.replace(new URL("/", window.location.origin).toString());
+      window.location.replace(new URL(getMaintenanceReturnPath(), window.location.origin).toString());
       return;
     }
 

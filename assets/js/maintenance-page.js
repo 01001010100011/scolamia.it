@@ -1,4 +1,5 @@
 import { CONTACTS } from "./site-content.js?v=20260312a";
+import { getMaintenanceMode } from "./site-settings.js?v=20260312a";
 
 const modalRoot = document.getElementById("maintenanceContactsModal");
 const modalBackdrop = document.getElementById("maintenanceContactsBackdrop");
@@ -16,12 +17,34 @@ function renderContacts() {
     <a
       href="${item.href}"
       ${item.href.startsWith("http") ? 'target="_blank" rel="noopener noreferrer"' : ""}
-      class="block rounded-[18px] border-2 border-black bg-white px-4 py-4 shadow-brutal transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      class="block rounded-[8px] border-2 border-black bg-white px-4 py-4 shadow-brutal transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
     >
       <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-accent">${item.label}</p>
       <p class="mt-2 text-base md:text-lg font-semibold break-all">${item.value}</p>
     </a>
   `).join("");
+}
+
+function getReturnUrl() {
+  try {
+    const from = new URL(window.location.href).searchParams.get("from");
+    if (!from || !from.startsWith("/")) return "/";
+    return from;
+  } catch {
+    return "/";
+  }
+}
+
+async function syncMaintenanceState() {
+  try {
+    const maintenanceMode = await getMaintenanceMode();
+    if (!maintenanceMode) {
+      closeModal();
+      window.location.replace(new URL(getReturnUrl(), window.location.origin).toString());
+    }
+  } catch (error) {
+    console.warn("Impossibile aggiornare lo stato manutenzione in tempo reale.", error);
+  }
 }
 
 function closeModal() {
@@ -59,3 +82,11 @@ window.addEventListener("keydown", (event) => {
 });
 
 renderContacts();
+syncMaintenanceState();
+window.addEventListener("focus", syncMaintenanceState);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    syncMaintenanceState();
+  }
+});
+window.setInterval(syncMaintenanceState, 15000);
