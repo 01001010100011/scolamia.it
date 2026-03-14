@@ -32,30 +32,106 @@
     };
   </script>
   <style>
+    html, body { max-width: 100%; overflow-x: clip; }
     body { font-family: "IBM Plex Sans", sans-serif; background: #f4f3ee; }
     .headline { font-family: "Bebas Neue", sans-serif; letter-spacing: .04em; }
-    .notice-card { background: linear-gradient(135deg, #ffffff 0%, #f6fbff 100%); }
+    .notice-shell { background: linear-gradient(135deg, #ffffff 0%, #f6fbff 100%); }
+    .whatsapp-card {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 1rem;
+      align-items: center;
+      border: 3px solid #000;
+      border-radius: 22px;
+      padding: 1.15rem;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04)),
+        linear-gradient(135deg, #128c7e 0%, #25d366 58%, #dcfff0 100%);
+      color: #062f22;
+      box-shadow: 6px 6px 0 0 #000;
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    }
+    .whatsapp-card:hover,
+    .whatsapp-card:focus-visible {
+      transform: translate(-2px, -2px);
+      box-shadow: 9px 9px 0 0 #000;
+      filter: saturate(1.05);
+      outline: none;
+    }
+    .whatsapp-mark {
+      width: 3.35rem;
+      height: 3.35rem;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      border: 2px solid #000;
+      background: rgba(255,255,255,0.28);
+      color: #fff;
+      backdrop-filter: blur(6px);
+    }
+    .whatsapp-arrow {
+      width: 2.5rem;
+      height: 2.5rem;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      border: 2px solid #000;
+      background: rgba(255,255,255,0.72);
+      color: #062f22;
+    }
+    .contact-trigger {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .55rem;
+      width: 100%;
+      border: 2px solid #000;
+      background: #fff;
+      padding: .95rem 1rem;
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      box-shadow: 4px 4px 0 0 #000;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .contact-trigger:hover,
+    .contact-trigger:focus-visible {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 0 #000;
+      outline: none;
+    }
+    @media (max-width: 640px) {
+      .whatsapp-card {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+      .whatsapp-arrow {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body class="text-ink public-grid-bg" data-no-shared-footer="true">
   <script src="/assets/js/cookie-consent-bootstrap.js?v=20260311a"></script>
-  <main class="min-h-screen flex items-center justify-center px-4 py-10 md:px-8">
-    <section class="w-full max-w-5xl border-4 border-black bg-white shadow-brutal overflow-hidden">
-      <div class="grid lg:grid-cols-[1.2fr_0.8fr]">
-        <div class="p-6 md:p-10 border-b-4 border-black lg:border-b-0 lg:border-r-4">
-          <div class="flex items-center gap-4">
-            <div class="border-2 border-black bg-white w-16 h-16 overflow-hidden shadow-brutal">
+  <main class="min-h-screen overflow-x-hidden px-4 py-8 md:px-8 md:py-10">
+    <section class="mx-auto w-full max-w-5xl overflow-hidden border-4 border-black bg-white shadow-brutal">
+      <div class="grid lg:grid-cols-[1.18fr_0.82fr]">
+        <div class="min-w-0 border-b-4 border-black p-6 md:p-10 lg:border-b-0 lg:border-r-4">
+          <div class="flex flex-wrap items-center gap-4">
+            <div class="h-16 w-16 overflow-hidden border-2 border-black bg-white shadow-brutal">
               <img src="/assets/logo-scola-mia.svg" alt="Logo ScolaMia" class="w-full h-full object-cover" />
             </div>
-            <div>
-              <p class="headline text-5xl leading-none">ScolaMia</p>
+            <div class="min-w-0">
+              <p class="headline break-words text-5xl leading-none">ScolaMia</p>
               <p class="text-xs font-semibold uppercase tracking-[0.18em] mt-1">Modalita manutenzione</p>
             </div>
           </div>
 
           <div class="mt-8">
             <p class="text-xs font-bold uppercase tracking-[0.18em] text-accent">Aggiornamento temporaneo</p>
-            <h1 class="headline text-7xl md:text-8xl leading-[0.92] mt-2">Sito in manutenzione</h1>
+            <h1 class="headline mt-2 break-words text-6xl leading-[0.92] sm:text-7xl md:text-8xl">Sito in manutenzione</h1>
             <p class="mt-4 text-xl md:text-2xl font-semibold">Torneremo online a breve.</p>
             <p class="mt-4 max-w-2xl text-sm md:text-base text-slate-700">
               Stiamo intervenendo sul sito per risolvere un problema o completare un aggiornamento urgente.
@@ -64,30 +140,83 @@
           </div>
         </div>
 
-        <div class="notice-card p-6 md:p-8 space-y-5">
+        <div class="notice-shell min-w-0 space-y-5 p-6 md:p-8">
           <a
             href="/canale-whatsapp/"
             target="_blank"
             rel="noopener noreferrer"
-            class="block border-2 border-black bg-white p-5 shadow-brutal transition-transform hover:-translate-y-0.5"
+            class="whatsapp-card"
+            aria-label="Apri il canale WhatsApp ufficiale di ScolaMia"
           >
-            <p class="text-xs font-bold uppercase tracking-[0.18em] text-accent">Aggiornamenti in tempo reale</p>
-            <h2 class="headline text-4xl mt-2">Canale WhatsApp</h2>
-            <p class="mt-2 text-sm text-slate-700">
-              Per aggiornamenti e comunicazioni in tempo reale, seguici sul nostro canale WhatsApp ufficiale.
-            </p>
+            <span class="whatsapp-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+                <path d="M20.52 3.48A11.82 11.82 0 0 0 12.1 0C5.56 0 .25 5.3.25 11.84c0 2.08.54 4.11 1.57 5.9L0 24l6.44-1.69a11.8 11.8 0 0 0 5.66 1.44h.01c6.53 0 11.84-5.31 11.84-11.85 0-3.16-1.23-6.13-3.43-8.42Zm-8.41 18.25h-.01a9.84 9.84 0 0 1-5.01-1.37l-.36-.22-3.82 1 1.02-3.72-.24-.38a9.83 9.83 0 0 1-1.51-5.2c0-5.43 4.42-9.85 9.86-9.85 2.63 0 5.1 1.02 6.96 2.88a9.78 9.78 0 0 1 2.89 6.97c0 5.43-4.42 9.85-9.85 9.85Zm5.4-7.37c-.29-.15-1.72-.85-1.99-.95-.27-.1-.46-.15-.66.15-.2.3-.76.95-.94 1.15-.17.2-.35.22-.64.07-.29-.15-1.24-.46-2.36-1.48a8.95 8.95 0 0 1-1.64-2.03c-.17-.29-.02-.45.13-.6.13-.13.29-.35.44-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.66-1.58-.9-2.17-.24-.57-.49-.49-.66-.5-.17-.01-.37-.01-.56-.01-.2 0-.52.07-.79.37-.27.29-1.05 1.03-1.05 2.5 0 1.47 1.08 2.89 1.23 3.09.15.2 2.12 3.24 5.14 4.55.72.31 1.28.49 1.72.62.72.23 1.37.2 1.89.12.58-.09 1.72-.7 1.96-1.37.24-.67.24-1.24.17-1.37-.08-.13-.27-.2-.56-.35Z" />
+              </svg>
+            </span>
+            <span class="min-w-0">
+              <span class="inline-flex rounded-full border-2 border-black bg-white/80 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-[#0b5c47]">Apri il canale</span>
+              <span class="headline mt-3 block break-words text-4xl leading-none text-white drop-shadow-[1px_1px_0_rgba(0,0,0,0.55)]">Canale WhatsApp</span>
+              <span class="mt-2 block text-sm font-medium text-[#083f30]">
+                Per aggiornamenti e comunicazioni in tempo reale, seguici sul nostro canale ufficiale.
+              </span>
+              <span class="mt-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-white/95">
+                Tocca qui per aprirlo
+                <span aria-hidden="true">→</span>
+              </span>
+            </span>
+            <span class="whatsapp-arrow" aria-hidden="true">↗</span>
           </a>
 
-          <section class="border-2 border-black bg-paper p-5 shadow-brutal">
+          <section class="rounded-[22px] border-2 border-black bg-paper p-5 shadow-brutal">
             <p class="text-xs font-bold uppercase tracking-[0.18em] text-accent">Contatti utili</p>
             <h2 class="headline text-4xl mt-2">Restiamo raggiungibili</h2>
-            <p class="mt-2 text-sm text-slate-700">Se hai bisogno di scriverci, qui trovi i contatti ufficiali gia usati dal sito.</p>
-            <div id="maintenanceContacts" class="mt-4 space-y-3"></div>
+            <p class="mt-2 text-sm text-slate-700">Se hai bisogno di contattarci durante la manutenzione, puoi aprire il riepilogo dei riferimenti ufficiali.</p>
+            <button id="openMaintenanceContactsBtn" type="button" class="contact-trigger mt-5">
+              <span>Visualizza contatti</span>
+              <span aria-hidden="true">↗</span>
+            </button>
           </section>
         </div>
       </div>
     </section>
   </main>
+
+  <div id="maintenanceContactsModal" class="hidden fixed inset-0 z-[120]">
+    <div id="maintenanceContactsBackdrop" class="pointer-events-none absolute inset-0 bg-black/60 opacity-0 transition-opacity duration-200"></div>
+    <div class="absolute inset-0 overflow-y-auto p-4 md:p-6">
+      <div
+        id="maintenanceContactsPanel"
+        class="mx-auto mt-10 w-full max-w-lg translate-y-4 rounded-[28px] border-4 border-black bg-paper p-5 shadow-brutal opacity-0 transition duration-200 md:mt-16 md:p-6"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="maintenanceContactsTitle"
+      >
+        <div class="flex items-start justify-between gap-4">
+          <div class="min-w-0">
+            <p class="text-xs font-bold uppercase tracking-[0.18em] text-accent">Contatti ufficiali</p>
+            <h2 id="maintenanceContactsTitle" class="headline mt-2 break-words text-4xl">Scrivici anche ora</h2>
+            <p class="mt-2 text-sm text-slate-700">Instagram e email restano disponibili anche mentre il sito pubblico e in manutenzione.</p>
+          </div>
+          <button
+            type="button"
+            data-maintenance-modal-close
+            class="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border-2 border-black bg-white text-xl font-bold shadow-brutal"
+            aria-label="Chiudi contatti"
+          >×</button>
+        </div>
+
+        <div id="maintenanceContacts" class="mt-5 space-y-3"></div>
+
+        <div class="mt-5 flex justify-end">
+          <button
+            type="button"
+            data-maintenance-modal-close
+            class="border-2 border-black bg-white px-4 py-2 text-xs font-bold uppercase shadow-brutal"
+          >Chiudi</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script type="module" src="/assets/js/maintenance-page.js?v=20260312a"></script>
   <script src="/assets/js/cookie-consent-ui.js?v=20260311a"></script>

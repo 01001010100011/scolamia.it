@@ -24,13 +24,24 @@ function isAllowedPath(pathname) {
 
 async function runMaintenanceGuard() {
   const currentPath = normalizePath(window.location.pathname);
-  if (isAllowedPath(currentPath)) {
-    delete document.documentElement.dataset.maintenanceGuard;
-    return;
-  }
 
   try {
     const maintenanceMode = await getMaintenanceMode();
+    if (currentPath === "/manutenzione/") {
+      if (maintenanceMode) {
+        delete document.documentElement.dataset.maintenanceGuard;
+        return;
+      }
+
+      window.location.replace(new URL("/", window.location.origin).toString());
+      return;
+    }
+
+    if (isAllowedPath(currentPath)) {
+      delete document.documentElement.dataset.maintenanceGuard;
+      return;
+    }
+
     if (!maintenanceMode) {
       delete document.documentElement.dataset.maintenanceGuard;
       return;
