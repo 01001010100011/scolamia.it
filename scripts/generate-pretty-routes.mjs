@@ -17,7 +17,6 @@ const ROUTES = [
   { source: "turni-ricreazione.html", route: "turni-ricreazione" },
   { source: "ricerca.html", route: "ricerca" },
   { source: "admin.html", route: "admin" },
-  { source: "admin-manutenzione.html", route: "admin-manutenzione" },
   { source: "admin-article-editor.html", route: "admin-article-editor" }
 ];
 

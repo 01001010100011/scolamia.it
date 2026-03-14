@@ -32,7 +32,6 @@ function isAllowedPath(pathname, request) {
   if (request.headers.get("x-maintenance-bypass") === "1") return true;
   if (ALLOWED_EXACT_PATHS.has(pathname)) return true;
   if (pathname === "/admin" || pathname === "/admin/") return true;
-  if (pathname === "/admin-manutenzione" || pathname === "/admin-manutenzione/") return true;
   if (pathname === "/admin-article-editor" || pathname === "/admin-article-editor/") return true;
   return isAssetLike(pathname);
 }

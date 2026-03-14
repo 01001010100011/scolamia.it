@@ -4,7 +4,6 @@ import { buildCountdownUrl } from "./countdown-url.js?v=20260303a";
 import { ensureSiteSettingsRow, saveSiteSettings } from "./site-settings.js?v=20260312a";
 
 const REQUIRE_LOGIN_ON_EACH_VISIT = false;
-const DEFAULT_ADMIN_SECTION = document.body?.dataset?.adminDefaultSection === "maintenance" ? "maintenance" : "articles";
 
 const loginBox = document.getElementById("loginBox");
 const adminPanel = document.getElementById("adminPanel");
@@ -53,7 +52,7 @@ const agendaForm = document.getElementById("agendaForm");
 const adminAgendaEvents = document.getElementById("adminAgendaEvents");
 const agendaSlugPreview = document.getElementById("agendaSlugPreview");
 
-let currentSection = DEFAULT_ADMIN_SECTION;
+let currentSection = "articles";
 let currentArticleSubView = "articles";
 let draggedFeaturedId = null;
 let maintenanceToggleBusy = false;
@@ -603,7 +602,7 @@ async function handleAuthUi() {
   if (!isAuth) {
     setAdminStatus("");
     setLoginError("");
-    setContentSection(DEFAULT_ADMIN_SECTION);
+    setContentSection("articles");
     setArticleSubView("articles");
     clearEditContext();
     return false;
@@ -627,7 +626,6 @@ async function handleAuthUi() {
     renderMaintenanceUi();
     renderCountdownSlugPreview();
     renderAgendaSlugPreview();
-    setContentSection(DEFAULT_ADMIN_SECTION);
     setAdminStatus("");
   } catch (err) {
     console.error(err);
@@ -724,6 +722,12 @@ openContentAgendaBtn?.addEventListener("click", (event) => {
   event.preventDefault();
   setContentSection("agenda");
   renderAdminAgendaEvents();
+});
+
+openMaintenanceViewBtn?.addEventListener("click", (event) => {
+  event.preventDefault();
+  setContentSection("maintenance");
+  renderMaintenanceUi();
 });
 
 openArticlesViewBtn?.addEventListener("click", (event) => {
