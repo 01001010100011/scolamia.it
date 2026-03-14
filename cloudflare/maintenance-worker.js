@@ -81,19 +81,15 @@ export default {
     const url = new URL(request.url);
     const pathname = url.pathname;
 
+    if (isAllowedPath(pathname, request)) {
+      return fetch(request);
+    }
+
     let maintenanceMode = false;
     try {
       maintenanceMode = await fetchMaintenanceMode(env);
     } catch (error) {
       console.warn("Maintenance worker fallback to origin:", error?.message || error);
-      return fetch(request);
-    }
-
-    if (!maintenanceMode && (pathname === "/manutenzione" || pathname === "/manutenzione/")) {
-      return Response.redirect(`${env.SITE_ORIGIN}/`, 302);
-    }
-
-    if (isAllowedPath(pathname, request)) {
       return fetch(request);
     }
 

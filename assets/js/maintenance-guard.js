@@ -24,20 +24,13 @@ function isAllowedPath(pathname) {
 
 async function runMaintenanceGuard() {
   const currentPath = normalizePath(window.location.pathname);
-  const isMaintenancePage = currentPath === "/manutenzione/";
+  if (isAllowedPath(currentPath)) {
+    delete document.documentElement.dataset.maintenanceGuard;
+    return;
+  }
 
   try {
     const maintenanceMode = await getMaintenanceMode();
-    if (!maintenanceMode && isMaintenancePage) {
-      window.location.replace(`${window.location.origin}/`);
-      return;
-    }
-
-    if (isAllowedPath(currentPath)) {
-      delete document.documentElement.dataset.maintenanceGuard;
-      return;
-    }
-
     if (!maintenanceMode) {
       delete document.documentElement.dataset.maintenanceGuard;
       return;
