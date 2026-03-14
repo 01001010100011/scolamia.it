@@ -1,6 +1,7 @@
 import { escapeHtml, formatLocalDate, supabase, toSlugSafeName } from "./supabase-client.js?v=20260224e";
 import { buildAgendaSlugMap, getAgendaSlug } from "./agenda-url.js?v=20260303a";
 import { buildCountdownUrl } from "./countdown-url.js?v=20260303a";
+import { ensureSiteSettingsRow, saveSiteSettings } from "./site-settings.js?v=20260312a";
 
 const REQUIRE_LOGIN_ON_EACH_VISIT = false;
 
@@ -23,6 +24,10 @@ const openArticlesViewBtn = document.getElementById("openArticlesViewBtn");
 const openFeaturedViewBtn = document.getElementById("openFeaturedViewBtn");
 const newItemBtn = document.getElementById("newItemBtn");
 const logoutBtn = document.getElementById("logoutBtn");
+const maintenanceActiveBanner = document.getElementById("maintenanceActiveBanner");
+const maintenanceModeInput = document.getElementById("maintenanceModeInput");
+const maintenanceModeSaveBtn = document.getElementById("maintenanceModeSaveBtn");
+const maintenanceModeHint = document.getElementById("maintenanceModeHint");
 
 const editContextBanner = document.getElementById("editContextBanner");
 const editContextType = document.getElementById("editContextType");
@@ -53,6 +58,7 @@ let articles = [];
 let countdowns = [];
 let events = [];
 let featuredIds = [];
+let siteSettings = { id: 1, featuredArticleIds: [], maintenanceMode: false };
 
 let activeContext = null;
 
@@ -217,26 +223,6 @@ function setArticleSubView(view) {
   if (showEdit) clearEditContext();
 }
 
-async function requireSettingsRow() {
-  const { data, error } = await supabase
-    .from("site_settings")
-    .select("id,featured_article_ids")
-    .eq("id", 1)
-    .maybeSingle();
-
-  if (error) throw error;
-  if (data) return data;
-
-  const { data: created, error: createError } = await supabase
-    .from("site_settings")
-    .upsert({ id: 1, featured_article_ids: [] }, { onConflict: "id" })
-    .select("id,featured_article_ids")
-    .single();
-
-  if (createError) throw createError;
-  return created;
-}
-
 async function ensureCurrentUserIsAdmin() {
   const { data: authData, error: authError } = await supabase.auth.getUser();
   if (authError) throw authError;
@@ -272,10 +258,7 @@ function getEffectiveFeaturedIds() {
 }
 
 async function upsertFeaturedIds() {
-  const { error } = await supabase
-    .from("site_settings")
-    .upsert({ id: 1, featured_article_ids: featuredIds }, { onConflict: "id" });
-  if (error) throw error;
+  siteSettings = await saveSiteSettings({ featuredArticleIds: featuredIds });
 }
 
 async function loadData() {
@@ -298,7 +281,7 @@ async function loadData() {
       .from("agenda_events")
       .select("id,title,category,date,description,created_at,updated_at")
       .order("updated_at", { ascending: false }),
-    requireSettingsRow()
+    ensureSiteSettingsRow()
   ]);
 
   if (articleError) throw articleError;
@@ -308,8 +291,25 @@ async function loadData() {
   articles = articleData || [];
   countdowns = countdownData || [];
   events = (eventData || []).sort((a, b) => agendaSortValue(a.date) - agendaSortValue(b.date));
-  featuredIds = Array.isArray(settings.featured_article_ids) ? settings.featured_article_ids : [];
+  siteSettings = settings;
+  featuredIds = [...siteSettings.featuredArticleIds];
   sanitizeFeaturedIds();
+}
+
+function renderMaintenanceUi() {
+  if (maintenanceModeInput) {
+    maintenanceModeInput.checked = Boolean(siteSettings.maintenanceMode);
+  }
+
+  if (maintenanceModeHint) {
+    maintenanceModeHint.textContent = siteSettings.maintenanceMode
+      ? "Il sito pubblico e bloccato e reindirizzato a /manutenzione. Admin, sitemap e canale WhatsApp restano raggiungibili."
+      : "Quando attivi la manutenzione, quasi tutto il sito pubblico viene bloccato. L'area admin resta pienamente accessibile.";
+  }
+
+  if (maintenanceActiveBanner) {
+    maintenanceActiveBanner.classList.toggle("hidden", !siteSettings.maintenanceMode);
+  }
 }
 
 function articleRow(article) {
@@ -608,6 +608,7 @@ async function handleAuthUi() {
     renderFeaturedManager();
     renderAdminCountdowns();
     renderAdminAgendaEvents();
+    renderMaintenanceUi();
     renderCountdownSlugPreview();
     renderAgendaSlugPreview();
     setAdminStatus("");
@@ -646,6 +647,32 @@ loginForm.addEventListener("submit", async (event) => {
       submitBtn.disabled = false;
       submitBtn.textContent = "Accedi";
     }
+  }
+});
+
+maintenanceModeSaveBtn?.addEventListener("click", async () => {
+  if (!(maintenanceModeInput instanceof HTMLInputElement)) return;
+
+  maintenanceModeSaveBtn.disabled = true;
+  const originalLabel = maintenanceModeSaveBtn.textContent;
+  maintenanceModeSaveBtn.textContent = "Salvataggio...";
+
+  try {
+    siteSettings = await saveSiteSettings({ maintenanceMode: maintenanceModeInput.checked });
+    featuredIds = [...siteSettings.featuredArticleIds];
+    renderMaintenanceUi();
+    setAdminStatus(
+      siteSettings.maintenanceMode
+        ? "Modalita manutenzione attivata. Il sito pubblico verra bloccato."
+        : "Modalita manutenzione disattivata. Il sito pubblico torna accessibile."
+    );
+  } catch (error) {
+    console.error(error);
+    maintenanceModeInput.checked = Boolean(siteSettings.maintenanceMode);
+    alert("Impossibile aggiornare la modalita manutenzione.");
+  } finally {
+    maintenanceModeSaveBtn.disabled = false;
+    maintenanceModeSaveBtn.textContent = originalLabel;
   }
 });
 

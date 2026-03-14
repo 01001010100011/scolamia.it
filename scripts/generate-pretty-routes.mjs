@@ -13,6 +13,7 @@ const ROUTES = [
   { source: "cookie.html", route: "cookie" },
   { source: "countdown.html", route: "countdown" },
   { source: "countdown-detail.html", route: "countdown-detail" },
+  { source: "manutenzione.html", route: "manutenzione" },
   { source: "turni-ricreazione.html", route: "turni-ricreazione" },
   { source: "ricerca.html", route: "ricerca" },
   { source: "admin.html", route: "admin" },

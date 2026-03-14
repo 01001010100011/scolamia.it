@@ -225,6 +225,10 @@ function buildRedirectHtml({ title, excerpt, imageUrl, canonicalUrl, redirectUrl
   <link rel="icon" type="image/svg+xml" href="/assets/favicon-scola-mia.svg" />
   <link rel="apple-touch-icon" sizes="180x180" href="https://${domain}/apple-touch-icon-v2.png" />
   <link rel="apple-touch-icon-precomposed" href="https://${domain}/apple-touch-icon-precomposed-v2.png" />
+  <script src="/assets/js/enforce-clean-url.js?v=20260311a"></script>
+  <script>document.documentElement.dataset.maintenanceGuard = "pending";</script>
+  <script type="module" src="/assets/js/maintenance-guard.js?v=20260312a"></script>
+  <style>html[data-maintenance-guard="pending"] body { opacity: 0; }</style>
   <meta http-equiv="refresh" content="0; url=${safeRedirect}" />
   ${metaBlock}
   <style>
